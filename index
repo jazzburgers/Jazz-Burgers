@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Online</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Babel para transpilar JSX en el navegador (solo para desarrollo/ejemplo simple) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Color de fondo suave */
+        }
+        /* Estilos generales para botones y elementos redondeados */
+        .btn-primary {
+            background-color: #f97316; /* Naranja principal */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px; /* Totalmente redondeado */
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #ea580c;
+        }
+        .btn-secondary {
+            background-color: #22c55e; /* Verde para acciones positivas */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #16a34a;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem; /* Bordes redondeados */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            border-radius: 0.5rem; /* Bordes redondeados para campos de entrada */
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #f97316; /* Borde naranja al enfocar */
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente para el modal */
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+        }
+        .modal-content {
+            border-radius: 1rem;
+            max-width: 90%; /* Ancho máximo en móviles */
+            width: 500px; /* Ancho en escritorio */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+    <!-- Contenedor donde se montará la aplicación React -->
+    <div id="root" class="w-full"></div>
+
+    <script type="text/babel">
+        console.log("Aplicación de Pedidos: Script React cargando..."); // Added console log
+
+        const { useState, useEffect, useRef } = React;
+        const ReactDOM = window.ReactDOM;
+
+        // Inline SVG Icons (reemplazando Lucide React)
+        const ShoppingCartIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 12.87a2 2 0 0 0 2 1.13h9.43a2 2 0 0 0 2-1.13L23 6H6" /></svg>
+        );
+        const XIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+        );
+        const PlusIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+        );
+        const MinusIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14" /></svg>
+        );
+        const CheckIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 6 9 17l-5-5" /></svg>
+        );
+        const HomeIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+        );
+        const BurgerIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 17a8 8 0 0 1-5-1.8L2 22l4-2h8a8 8 0 0 0 0-16H4.2l-2.4 2.8A12 12 0 0 0 11 17z" /><path d="M22 17h-1a8 8 0 0 0-7-7V2.5L22 10z" /></svg>
+        );
+        const SoupIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 21h10" /><path d="M12 17v4" /><path d="M10 21h4" /><path d="M21 15c0-1.7-1.3-3-3-3H6c-1.7 0-3 1.3-3 3v2c0 1.7 1.3 3 3 3h12c1.7 0 3-1.3 3-3v-2z" /><path d="M12 3a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4h-2V7a4 4 0 0 1 4-4z" /></svg>
+        );
+        const CupSodaIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6" /><path d="M10 12h4v-2.5a2.5 2.5 0 0 0-2.5-2.5h-2.5V2h4" /><path d="M12 18v2" /></svg>
+        );
+        const CookieIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /><path d="M8.5 10a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 10z" /><path d="M14 7a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 14 7z" /><path d="M15.5 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14z" /><path d="M10 15.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 10 15.5z" /></svg>
+        );
+        const SparklesIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M9.9 2.5l-.23.63a1.8 1.8 0 0 1-1.63 1.25L5.26 4.67l.63-.23a1.8 1.8 0 0 1 1.25-1.63l.7-.26a1.8 1.8 0 0 1 1.63 1.25z" />
+                <path d="M12 11l.23-.63a1.8 1.8 0 0 0 1.63-1.25L17.74 9.33l-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
+                <path d="M10 21.5l.23-.63a1.8 1.8 0 = 0 0 1.63-1.25l2.8-.26-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
+                <path d="M2.5 12l.63.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63z" />
+            </svg>
+        );
+
+        // Main App Component
+        const App = () => {
+            // Configuration: Your WhatsApp Number
+            const WHATSAPP_NUMBER = "5491122663776"; // !!! CAMBIA ESTO por tu número de WhatsApp con código de país (sin + ni espacios).
+                                                    // Para el número 01122663776 (Argentina), el formato internacional es 5491122663776.
+
+            // Product Data (Highly customizable)
+            // Structure includes categories and customizable options for products
+            const categories = [
+                { id: 'all', name: 'Todo', icon: <HomeIcon className="w-5 h-5" /> },
+                { id: 'hamburguesas', name: 'Hamburguesas', icon: <BurgerIcon className="w-5 h-5" /> },
+                { id: 'papas-fritas', name: 'Papas Fritas', icon: <SoupIcon className="w-5 h-5" /> },
+                { id: 'bebidas', name: 'Bebidas', icon: <CupSodaIcon className="w-5 h-5" /> },
+                { id: 'postres', name: 'Postres', icon: <CookieIcon className="w-5 h-5" /> },
+            ];
+
+            const products = [
+                {
+                    id: 'hamburguesa-clasica',
+                    name: 'Hamburguesa Clásica',
+                    description: 'La clásica de la casa con lechuga, tomate y cebolla.',
+                    price: 3500,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Cl%C3%A1sica',
+                    category: 'hamburguesas',
+                    options: {
+                        pattyCount: {
+                            type: 'radio',
+                            label: 'Cantidad de medallones',
+                            default: 'simple',
+                            choices: [
+                                { value: 'simple', label: 'Simple', price: 0 },
+                                { value: 'doble', label: 'Doble', price: 1000 },
+                                { value: 'triple', label: 'Triple', price: 2000 }
+                            ]
+                        },
+                        extras: {
+                            type: 'checkbox',
+                            label: 'Agregar extra',
+                            choices: [
+                                { value: 'queso-cheddar', label: 'Queso Cheddar', price: 400 },
+                                { value: 'bacon', label: 'Bacon', price: 500 },
+                                { value: 'huevo', label: 'Huevo', price: 300 }
+                            ]
+                        },
+                        salsas: {
+                            type: 'checkbox',
+                            label: 'Salsas (gratis)',
+                            choices: [
+                                { value: 'mayonesa', label: 'Mayonesa', price: 0 },
+                                { value: 'ketchup', label: 'Ketchup', price: 0 },
+                                { value: 'mostaza', label: 'Mostaza', price: 0 }
+                            ]
+                        }
+                    }
+                },
+                {
+                    id: 'hamburguesa-especial',
+                    name: 'Hamburguesa Especial',
+                    description: 'Con cebolla caramelizada, queso azul y rúcula.',
+                    price: 4200,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Especial',
+                    category: 'hamburguesas',
+                    options: {
+                        pattyCount: {
+                            type: 'radio',
+                            label: 'Cantidad de medallones',
+                            default: 'simple',
+                            choices: [
+                                { value: 'simple', label: 'Simple', price: 0 },
+                                { value: 'doble', label: 'Doble', price: 1200 }
+                            ]
+                        },
+                        extras: {
+                            type: 'checkbox',
+                            label: 'Agregar extra',
+                            choices: [
+                                { value: 'queso-provolone', label: 'Queso Provolone', price: 500 },
+                                { value: 'champiñones', label: 'Champiñones', price: 400 }
+                            ]
+                        }
+                    }
+                },
+                {
+                    id: 'papas-grandes',
+                    name: 'Papas Fritas Grandes',
+                    description: 'Porción abundante de papas fritas.',
+                    price: 1500,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Papas+Grandes',
+                    category: 'papas-fritas',
+                    options: null // No customization for this product
+                },
+                {
+                    id: 'papas-cheddar-bacon',
+                    name: 'Papas Cheddar y Bacon',
+                    description: 'Papas con abundante cheddar y crocante bacon.',
+                    price: 2200,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Cheddar+Bacon',
+                    category: 'papas-fritas',
+                    options: null
+                },
+                {
+                    id: 'gaseosa-lata',
+                    name: 'Gaseosa Lata',
+                    description: 'Coca-Cola, Sprite, Fanta (354ml).',
+                    price: 700,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Gaseosa+Lata',
+                    category: 'bebidas',
+                    options: {
+                        sabor: {
+                            type: 'radio',
+                            label: 'Sabor',
+                            default: 'coca-cola',
+                            choices: [
+                                { value: 'coca-cola', label: 'Coca-Cola', price: 0 },
+                                { value: 'sprite', label: 'Sprite', price: 0 },
+                                { value: 'fanta', label: 'Fanta', price: 0 }
+                            ]
+                        }
+                    }
+                },
+                {
+                    id: 'agua-mineral-500ml',
+                    name: 'Agua Mineral 500ml',
+                    description: 'Agua mineral sin gas.',
+                    price: 500,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Agua+Mineral',
+                    category: 'bebidas',
+                    options: null
+                },
+                {
+                    id: 'helado-chocolate',
+                    name: 'Helado de Chocolate',
+                    description: 'Cremoso helado de chocolate.',
+                    price: 1200,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Helado+Chocolate',
+                    category: 'postres',
+                    options: null
+                },
+                {
+                    id: 'brownie',
+                    name: 'Brownie con Nuez',
+                    description: 'Delicioso brownie húmedo con trozos de nuez.',
+                    price: 1500,
+                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Brownie',
+                    category: 'postres',
+                    options: null
+                }
+            ];
+
+            // State Variables
+            const [selectedCategory, setSelectedCategory] = useState('all'); // Current selected product category
+            const [cart, setCart] = useState([]); // Items in the shopping cart
+            const [isCartOpen, setIsCartOpen] = useState(false); // State for cart sidebar visibility
+            const [isProductModalOpen, setIsProductModalOpen] = useState(false); // State for product customization modal
+            const [selectedProduct, setSelectedProduct] = useState(null); // Product currently being customized
+            const [customizationOptions, setCustomizationOptions] = useState({}); // Options chosen in product modal
+            const [itemQuantity, setItemQuantity] = useState(1); // Quantity for current product in modal
+            const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false); // State for checkout modal
+            const [customerInfo, setCustomerInfo] = useState({ name: '', address: '', notes: '' }); // Customer details for checkout
+            const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // State for general message modal
+            const [messageModalContent, setMessageModalContent] = useState({ title: '', text: '' }); // Content for message modal
+            const [llmRecommendation, setLlmRecommendation] = useState(null); // State for LLM recommendation
+            const [isLlmLoading, setIsLlmLoading] = useState(false); // State for LLM loading indicator
+
+
+            // Refs for modals to handle clicks outside
+            const cartRef = useRef(null);
+            const productModalRef = useRef(null);
+            const checkoutModalRef = useRef(null);
+            const messageModalRef = useRef(null);
+
+            // Filtered products based on selected category
+            const filteredProducts = selectedCategory === 'all'
+                ? products
+                : products.filter(p => p.category === selectedCategory);
+
+            // Calculate total price of items in the cart
+            const cartTotal = cart.reduce((sum, item) => sum + (item.price + item.optionPrice) * item.quantity, 0);
+
+            // --- Utility Functions ---
+
+            /**
+             * Muestra un modal de mensaje/alerta general.
+             * @param {string} title - El título del mensaje.
+             * @param {string} text - El texto del contenido del mensaje.
+             */
+            const showMessageModal = (title, text) => {
+                setMessageModalContent({ title, text });
+                setIsMessageModalOpen(true);
+            };
+
+            /**
+             * Cierra el modal de mensaje/alerta general.
+             */
+            const closeMessageModal = () => {
+                setIsMessageModalOpen(false);
+                setMessageModalContent({ title: '', text: '' });
+            };
+
+            // --- Product Modal Functions ---
+
+            /**
+             * Abre el modal de personalización de productos para un producto dado.
+             * Inicializa las opciones de personalización y la cantidad.
+             * @param {object} product - El objeto del producto a personalizar.
+             */
+            const openProductModal = (product) => {
+                setSelectedProduct(product);
+                setItemQuantity(1); // Cantidad por defecto
+                const initialOptions = {};
+                if (product.options) {
+                    Object.keys(product.options).forEach(optionKey => {
+                        const optionType = product.options[optionKey].type;
+                        if (optionType === 'radio') {
+                            initialOptions[optionKey] = product.options[optionKey].default;
+                        } else if (optionType === 'checkbox') {
+                            initialOptions[optionKey] = []; // Array para múltiples selecciones
+                        }
+                    });
+                }
+                setCustomizationOptions(initialOptions);
+                setLlmRecommendation(null); // Reset LLM recommendation when opening new product
+                setIsProductModalOpen(true);
+            };
+
+            /**
+             * Cierra el modal de personalización de productos.
+             */
+            const closeProductModal = () => {
+                setIsProductModalOpen(false);
+                setSelectedProduct(null);
+                setCustomizationOptions({});
+                setItemQuantity(1);
+                setLlmRecommendation(null); // Clear recommendation on close
+                setIsLlmLoading(false); // Stop loading on close
+            };
+
+            /**
+             * Maneja los cambios en las opciones de personalización del producto (radio y checkbox).
+             * @param {string} optionKey - La clave de la opción que se está cambiando (ej. 'pattyCount').
+             * @param {string} value - El nuevo valor de la opción.
+             * @param {string} type - El tipo de opción ('radio' o 'checkbox').
+             */
+            const handleOptionChange = (optionKey, value, type) => {
+                setCustomizationOptions(prevOptions => {
+                    if (type === 'radio') {
+                        return { ...prevOptions, [optionKey]: value };
+                    } else if (type === 'checkbox') {
+                        const currentChoices = prevOptions[optionKey] || [];
+                        if (currentChoices.includes(value)) {
+                            return { ...prevOptions, [optionKey]: currentChoices.filter(item => item !== value) };
+                        } else {
+                            return { ...prevOptions, [optionKey]: [...currentChoices, value] };
+                        }
+                    }
+                    return prevOptions;
+                });
+                setLlmRecommendation(null); // Clear recommendation if options change
+            };
+
+            /**
+             * Calcula el precio adicional basado en las opciones de personalización seleccionadas.
+             * @returns {number} - El precio extra de las opciones.
+             */
+            const calculateOptionPrice = () => {
+                let extraPrice = 0;
+                if (!selectedProduct || !selectedProduct.options) return 0;
+
+                Object.keys(selectedProduct.options).forEach(optionKey => {
+                    const optionConfig = selectedProduct.options[optionKey];
+                    const selectedValue = customizationOptions[optionKey];
+
+                    if (optionConfig.type === 'radio' && selectedValue) {
+                        const choice = optionConfig.choices.find(c => c.value === selectedValue);
+                        if (choice) extraPrice += choice.price;
+                    } else if (optionConfig.type === 'checkbox' && Array.isArray(selectedValue)) {
+                        selectedValue.forEach(val => {
+                            const choice = optionConfig.choices.find(c => c.value === val);
+                            if (choice) extraPrice += choice.price;
+                        });
+                    }
+                });
+                return extraPrice;
+            };
+
+            // --- Gemini API Integration for Chef's Recommendation ---
+            const getChefRecommendation = async () => {
+                if (!selectedProduct) return;
+
+                setIsLlmLoading(true);
+                setLlmRecommendation(null); // Clear previous recommendation
+
+                let promptText = `Dado el plato principal "${selectedProduct.name}" con la descripción "${selectedProduct.description}"`;
+
+                // Add chosen options to the prompt
+                const chosenOptionDetails = Object.keys(customizationOptions)
+                    .map(optionKey => {
+                        const optionConfig = selectedProduct.options?.[optionKey];
+                        if (!optionConfig) return null;
+
+                        const selectedValue = customizationOptions[optionKey];
+                        if (optionConfig.type === 'radio' && selectedValue) {
+                            const choice = optionConfig.choices.find(c => c.value === selectedValue);
+                            return `${optionConfig.label}: ${choice?.label}`;
+                        } else if (optionConfig.type === 'checkbox' && Array.isArray(selectedValue) && selectedValue.length > 0) {
+                            return `${optionConfig.label}: ${selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ')}`;
+                        }
+                        return null;
+                    })
+                    .filter(Boolean);
+
+                if (chosenOptionDetails.length > 0) {
+                    promptText += ` y las siguientes opciones elegidas: ${chosenOptionDetails.join(', ')}.`;
+                } else {
+                    promptText += `.`;
+                }
+
+                promptText += ` Sugiere un plato de acompañamiento (guarnición) y una bebida que combinen bien con él. Formatea tu respuesta como un objeto JSON con las propiedades "side" (string) y "beverage" (string). Por ejemplo: {'side': 'Papas Fritas', 'beverage': 'Coca-Cola'}. Sé conciso y solo proporciona el JSON.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: promptText }] });
+
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "side": { "type": "STRING" },
+                                "beverage": { "type": "STRING" }
+                            },
+                            "propertyOrdering": ["side", "beverage"]
+                        }
+                    }
+                };
+
+                const apiKey = ""; // Leave as-is for Canvas environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const jsonString = result.candidates[0].content.parts[0].text;
+                        const parsedRecommendation = JSON.parse(jsonString);
+                        setLlmRecommendation(parsedRecommendation);
+                    } else {
+                        console.error('Unexpected LLM response structure:', result);
+                        showMessageModal('Error en la IA', 'No se pudo generar una recomendación. Inténtalo de nuevo.');
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    showMessageModal('Error de Conexión', 'No se pudo conectar con el servicio de recomendaciones. Verifica tu conexión.');
+                } finally {
+                    setIsLlmLoading(false);
+                }
+            };
+
+            // --- Cart Functions ---
+
+            /**
+             * Agrega el producto seleccionado con sus personalizaciones actuales y cantidad al carrito.
+             */
+            const addItemToCart = () => {
+                if (!selectedProduct) return;
+
+                const optionPrice = calculateOptionPrice();
+                const itemToAdd = {
+                    ...selectedProduct,
+                    uniqueId: `${selectedProduct.id}-${JSON.stringify(customizationOptions)}-${Date.now()}`, // ID único para cada artículo del carrito
+                    chosenOptions: customizationOptions,
+                    quantity: itemQuantity,
+                    optionPrice: optionPrice // Almacenar el precio extra calculado
+                };
+
+                setCart(prevCart => {
+                    // Para simplificar, siempre se agrega como un nuevo elemento incluso si las opciones son idénticas.
+                    // Una lógica más compleja podría intentar agrupar elementos idénticos con opciones idénticas.
+                    return [...prevCart, itemToAdd];
+                });
+
+                showMessageModal('Producto Agregado', `${itemToAdd.name} ${itemToAdd.quantity > 1 ? `(x${itemToAdd.quantity})` : ''} agregado al carrito.`);
+                closeProductModal();
+                setIsCartOpen(true); // Abrir la barra lateral del carrito cuando se agrega un artículo
+            };
+
+            /**
+             * Aumenta la cantidad de un artículo específico en el carrito.
+             * @param {string} uniqueId - El ID único del artículo del carrito.
+             */
+            const increaseCartItemQuantity = (uniqueId) => {
+                setCart(prevCart =>
+                    prevCart.map(item =>
+                        item.uniqueId === uniqueId ? { ...item, quantity: item.quantity + 1 } : item
+                    )
+                );
+            };
+
+            /**
+             * Disminuye la cantidad de un artículo específico en el carrito.
+             * Elimina el artículo si la cantidad llega a 0.
+             * @param {string} uniqueId - El ID único del artículo del carrito.
+             */
+            const decreaseCartItemQuantity = (uniqueId) => {
+                setCart(prevCart =>
+                    prevCart.map(item =>
+                        item.uniqueId === uniqueId ? { ...item, quantity: item.quantity - 1 } : item
+                    ).filter(item => item.quantity > 0) // Eliminar elementos con cantidad 0
+                );
+            };
+
+            /**
+             * Elimina un artículo específico del carrito.
+             * @param {string} uniqueId - El ID único del artículo del carrito.
+             */
+            const removeCartItem = (uniqueId) => {
+                setCart(prevCart => prevCart.filter(item => item.uniqueId !== uniqueId));
+                showMessageModal('Producto Eliminado', 'Producto eliminado del carrito.');
+            };
+
+            // --- Checkout Functions ---
+
+            /**
+             * Abre el modal de pago si el carrito no está vacío.
+             */
+            const openCheckoutModal = () => {
+                if (cart.length === 0) {
+                    showMessageModal('Carrito Vacío', 'Por favor, agrega productos al carrito antes de realizar un pedido.');
+                    return;
+                }
+                setIsCheckoutModalOpen(true);
+            };
+
+            /**
+             * Cierra el modal de pago y restablece la información del cliente.
+             */
+            const closeCheckoutModal = () => {
+                setIsCheckoutModalOpen(false);
+                setCustomerInfo({ name: '', address: '', notes: '' });
+            };
+
+            /**
+             * Genera el mensaje de WhatsApp con los detalles del pedido y la información del cliente.
+             * @returns {string} - El mensaje codificado para URL de WhatsApp.
+             */
+            const generateWhatsAppMessage = () => {
+                let message = `¡Hola! 👋 Tengo un nuevo pedido para ti:\n\n`;
+
+                message += `*Cliente:* ${customerInfo.name}\n`;
+                message += `*Dirección:* ${customerInfo.address}\n\n`;
+
+                message += `*Detalle del Pedido:*\n`;
+                cart.forEach((item, index) => {
+                    const itemTotal = (item.price + item.optionPrice) * item.quantity;
+                    message += `${index + 1}. *${item.name}* (x${item.quantity}) - $${itemTotal.toLocaleString('es-AR')}\n`;
+                    // Agregar opciones elegidas al mensaje
+                    if (item.chosenOptions && Object.keys(item.chosenOptions).length > 0) {
+                        Object.keys(item.chosenOptions).forEach(optionKey => {
+                            const optionConfig = products.find(p => p.id === item.id)?.options?.[optionKey];
+                            if (optionConfig) {
+                                const selectedValue = item.chosenOptions[optionKey];
+                                if (optionConfig.type === 'radio' && selectedValue) {
+                                    const choice = optionConfig.choices.find(c => c.value === selectedValue);
+                                    if (choice) message += `   - ${optionConfig.label}: ${choice.label}\n`;
+                                } else if (optionConfig.type === 'checkbox' && Array.isArray(selectedValue) && selectedValue.length > 0) {
+                                    message += `   - ${optionConfig.label}: ${selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ')}\n`;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                message += `\n*Total a Pagar:* $${cartTotal.toLocaleString('es-AR')}\n\n`;
+
+                if (customerInfo.notes) {
+                    message += `*Notas de Entrega:* ${customerInfo.notes}\n\n`;
+                }
+
+                message += `¡Gracias!`;
+
+                return encodeURIComponent(message);
+            };
+
+            /**
+             * Maneja el envío del formulario de pago.
+             * Abre WhatsApp con el mensaje pre-rellenado.
+             * @param {Event} e - El evento de envío del formulario.
+             */
+            const handleCheckoutSubmit = (e) => {
+                e.preventDefault();
+
+                if (!customerInfo.name || !customerInfo.address) {
+                    showMessageModal('Campos Obligatorios', 'Por favor, completa tu nombre y dirección.');
+                    return;
+                }
+
+                const whatsappMessage = generateWhatsAppMessage();
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+                window.open(whatsappUrl, '_blank'); // Abrir WhatsApp en una nueva pestaña
+                closeCheckoutModal(); // Cerrar el modal de pago
+                setCart([]); // Vaciar el carrito
+                showMessageModal('Pedido Enviado', 'Tu pedido ha sido enviado con éxito por WhatsApp. ¡Te contactaremos pronto!');
+            };
+
+            // --- Manejadores de Clicks Fuera para Modales/Barra Lateral ---
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    // Barra Lateral del Carrito
+                    if (isCartOpen && cartRef.current && !cartRef.current.contains(event.target)) {
+                        setIsCartOpen(false);
+                    }
+                    // Modal de Producto
+                    if (isProductModalOpen && productModalRef.current && !productModalRef.current.contains(event.target)) {
+                        closeProductModal();
+                    }
+                    // Modal de Pago
+                    if (isCheckoutModalOpen && checkoutModalRef.current && !checkoutModalRef.current.contains(event.target)) {
+                        closeCheckoutModal();
+                    }
+                    // Modal de Mensaje
+                    if (isMessageModalOpen && messageModalRef.current && !messageModalRef.current.contains(event.target)) {
+                        closeMessageModal();
+                    }
+                };
+
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => {
+                    document.removeEventListener('mousedown', handleClickOutside);
+                };
+            }, [isCartOpen, isProductModalOpen, isCheckoutModalOpen, isMessageModalOpen]); // Dependencias para useEffect
+
+
+            return (
+                <div className="min-h-screen flex flex-col bg-gray-100 font-inter text-gray-800">
+                    {/* Header */}
+                    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-xl">
+                        <div className="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/FF5733/FFFFFF?text=Logo" alt="Logo" className="rounded-full" />
+                            <h1 className="text-2xl font-bold text-gray-900">Tu Pedido Online</h1>
+                        </div>
+                        <button
+                            className="relative p-3 bg-yellow-500 text-white rounded-full shadow-lg hover:bg-yellow-600 transition-colors"
+                            onClick={() => setIsCartOpen(!isCartOpen)}
+                        >
+                            <ShoppingCartIcon className="w-6 h-6" />
+                            {cart.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce">
+                                    {cart.length}
+                                </span>
+                            )}
+                        </button>
+                    </header>
+
+                    {/* Category Tabs */}
+                    <nav className="bg-white shadow-sm p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-[68px] z-30 border-b border-gray-200 rounded-b-xl">
+                        {categories.map(category => (
+                            <button
+                                key={category.id}
+                                onClick={() => setSelectedCategory(category.id)}
+                                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap
+                                    ${selectedCategory === category.id
+                                        ? 'bg-orange-500 text-white shadow-md'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                            >
+                                {category.icon}
+                                <span className="ml-2">{category.name}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+                        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredProducts.length === 0 ? (
+                                <p className="col-span-full text-center text-gray-600 text-lg py-10">
+                                    No hay productos en esta categoría.
+                                </p>
+                            ) : (
+                                filteredProducts.map(product => (
+                                    <div
+                                        key={product.id}
+                                        className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer"
+                                        onClick={() => openProductModal(product)}
+                                    >
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="w-full h-48 object-cover"
+                                        />
+                                        <div className="p-4 flex-grow flex flex-col justify-between">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
+                                            <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
+                                            <div className="flex justify-between items-center mt-auto">
+                                                <span className="text-lg font-semibold text-orange-600">
+                                                    ${product.price.toLocaleString('es-AR')}
+                                                </span>
+                                                <button
+                                                    className="bg-green-500 text-white p-2 rounded-full shadow-md hover:bg-green-600 transition-colors"
+                                                    onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
+                                                >
+                                                    <PlusIcon className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </section>
+                    </main>
+
+                    {/* Cart Sidebar */}
+                    <div
+                        ref={cartRef}
+                        className={`fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 p-6 flex flex-col
+                            ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                    >
+                        <div className="flex justify-between items-center mb-6 border-b pb-4">
+                            <h2 className="text-3xl font-bold text-gray-900">Tu Carrito</h2>
+                            <button
+                                className="p-2 text-gray-500 hover:text-gray-800 rounded-full hover:bg-gray-100 transition-colors"
+                                onClick={() => setIsCartOpen(false)}
+                            >
+                                <XIcon className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {cart.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center flex-grow text-gray-500">
+                                <ShoppingCartIcon className="w-24 h-24 mb-4 opacity-50" />
+                                <p className="text-lg">Tu carrito está vacío.</p>
+                            </div>
+                        ) : (
+                            <div className="flex-grow overflow-y-auto space-y-4 pr-2 -mr-2"> {/* Se agregó padding para la barra de desplazamiento */}
+                                {cart.map(item => (
+                                    <div key={item.uniqueId} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg shadow-sm">
+                                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md flex-shrink-0" />
+                                        <div className="flex-grow">
+                                            <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                                            <p className="text-sm text-gray-600">
+                                                {Object.keys(item.chosenOptions).map(optionKey => {
+                                                    const optionConfig = products.find(p => p.id === item.id)?.options?.[optionKey];
+                                                    const selectedValue = item.chosenOptions[optionKey];
+                                                    if (!optionConfig || !selectedValue || (Array.isArray(selectedValue) && selectedValue.length === 0)) return null;
+
+                                                    if (optionConfig.type === 'radio') {
+                                                        const choice = optionConfig.choices.find(c => c.value === selectedValue);
+                                                        return `(${choice?.label}) `;
+                                                    } else if (optionConfig.type === 'checkbox') {
+                                                        return `(${selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ')}) `;
+                                                    }
+                                                    return null;
+                                                }).filter(Boolean).join('')}
+                                            </p>
+                                            <p className="text-md font-medium text-green-600">$ {(item.price + item.optionPrice).toLocaleString('es-AR')}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                                                onClick={() => decreaseCartItemQuantity(item.uniqueId)}
+                                            >
+                                                <MinusIcon className="w-4 h-4" />
+                                            </button>
+                                            <span className="font-semibold text-lg w-6 text-center">{item.quantity}</span>
+                                            <button
+                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                                                onClick={() => increaseCartItemQuantity(item.uniqueId)}
+                                            >
+                                                <PlusIcon className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <button
+                                            className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors"
+                                            onClick={() => removeCartItem(item.uniqueId)}
+                                        >
+                                            <XIcon className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="mt-6 pt-4 border-t border-gray-200">
+                            <div className="flex justify-between items-center text-2xl font-bold text-gray-900 mb-4">
+                                <span>Total:</span>
+                                <span>${cartTotal.toLocaleString('es-AR')}</span>
+                            </div>
+                            <button
+                                className="w-full bg-orange-500 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={openCheckoutModal}
+                                disabled={cart.length === 0}
+                            >
+                                Realizar Pedido
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Product Customization Modal */}
+                    {isProductModalOpen && selectedProduct && (
+                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
+                            <div ref={productModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+                                <button
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors z-10"
+                                    onClick={closeProductModal}
+                                >
+                                    <XIcon className="w-7 h-7" />
+                                </button>
+                                <img
+                                    src={selectedProduct.image}
+                                    alt={selectedProduct.name}
+                                    className="w-full h-56 object-cover"
+                                />
+                                <div className="p-6">
+                                    <h3 className="text-3xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h3>
+                                    <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+
+                                    {selectedProduct.options && (
+                                        <div className="space-y-6 mb-6">
+                                            {Object.keys(selectedProduct.options).map(optionKey => {
+                                                const optionConfig = selectedProduct.options[optionKey];
+                                                return (
+                                                    <div key={optionKey} className="border-t pt-4 border-gray-200">
+                                                        <h4 className="text-lg font-semibold text-gray-800 mb-3">{optionConfig.label}</h4>
+                                                        {optionConfig.type === 'radio' && (
+                                                            <div className="space-y-2">
+                                                                {optionConfig.choices.map(choice => (
+                                                                    <label key={choice.value} className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={optionKey}
+                                                                            value={choice.value}
+                                                                            checked={customizationOptions[optionKey] === choice.value}
+                                                                            onChange={() => handleOptionChange(optionKey, choice.value, 'radio')}
+                                                                            className="form-radio h-5 w-5 text-orange-500 focus:ring-orange-400"
+                                                                        />
+                                                                        <span className="ml-3 text-gray-700 font-medium flex-grow">{choice.label}</span>
+                                                                        {choice.price > 0 && (
+                                                                            <span className="text-sm text-gray-600">
+                                                                                +${choice.price.toLocaleString('es-AR')}
+                                                                            </span>
+                                                                        )}
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                        {optionConfig.type === 'checkbox' && (
+                                                            <div className="space-y-2">
+                                                                {optionConfig.choices.map(choice => (
+                                                                    <label key={choice.value} className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={customizationOptions[optionKey]?.includes(choice.value) || false}
+                                                                            onChange={() => handleOptionChange(optionKey, choice.value, 'checkbox')}
+                                                                            className="form-checkbox h-5 w-5 text-green-500 rounded focus:ring-green-400"
+                                                                        />
+                                                                        <span className="ml-3 text-gray-700 font-medium flex-grow">{choice.label}</span>
+                                                                        {choice.price > 0 && (
+                                                                            <span className="text-sm text-gray-600">
+                                                                                +${choice.price.toLocaleString('es-AR')}
+                                                                            </span>
+                                                                        )}
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* Gemini LLM Recommendation Section */}
+                                    <div className="mt-6 mb-6 border-t pt-4 border-gray-200">
+                                        <button
+                                            onClick={getChefRecommendation}
+                                            className="w-full bg-purple-600 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={isLlmLoading}
+                                        >
+                                            {isLlmLoading ? (
+                                                <>
+                                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <span>Generando...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <SparklesIcon className="w-5 h-5" />
+                                                    <span>✨ Recomendación del Chef ✨</span>
+                                                </>
+                                            )}
+                                        </button>
+                                        {llmRecommendation && (
+                                            <div className="bg-blue-50 p-4 rounded-lg mt-4 text-center">
+                                                <p className="text-blue-800 font-semibold mb-2">¡El Chef sugiere!</p>
+                                                <p className="text-blue-700">
+                                                    Guarnición: <span className="font-medium">{llmRecommendation.side}</span>
+                                                </p>
+                                                <p className="text-blue-700">
+                                                    Bebida: <span className="font-medium">{llmRecommendation.beverage}</span>
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+                                        <div className="flex items-center space-x-3">
+                                            <button
+                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                onClick={() => setItemQuantity(prev => Math.max(1, prev - 1))}
+                                                disabled={itemQuantity === 1}
+                                            >
+                                                <MinusIcon className="w-5 h-5" />
+                                            </button>
+                                            <span className="text-xl font-bold w-8 text-center">{itemQuantity}</span>
+                                            <button
+                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors"
+                                                onClick={() => setItemQuantity(prev => prev + 1)}
+                                            >
+                                                <PlusIcon className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                        <button
+                                            className="bg-orange-500 text-white py-3 px-6 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                                            onClick={addItemToCart}
+                                        >
+                                            <span>Agregar</span>
+                                            <span>${((selectedProduct.price + calculateOptionPrice()) * itemQuantity).toLocaleString('es-AR')}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Checkout Modal */}
+                    {isCheckoutModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
+                            <div ref={checkoutModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-md relative p-6">
+                                <button
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                    onClick={closeCheckoutModal}
+                                >
+                                    <XIcon className="w-7 h-7" />
+                                </button>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Confirmar Pedido</h3>
+                                <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+                                    <div>
+                                        <label htmlFor="customer-name" className="block text-gray-700 text-sm font-medium mb-1">Tu Nombre:</label>
+                                        <input
+                                            type="text"
+                                            id="customer-name"
+                                            placeholder="Ej: Juan Pérez"
+                                            value={customerInfo.name}
+                                            onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                                            required
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="customer-address" className="block text-gray-700 text-sm font-medium mb-1">Tu Dirección:</label>
+                                        <input
+                                            type="text"
+                                            id="customer-address"
+                                            placeholder="Ej: Calle Falsa 123, Ciudad"
+                                            value={customerInfo.address}
+                                            onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+                                            required
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="delivery-notes" className="block text-gray-700 text-sm font-medium mb-1">Notas de Entrega (Opcional):</label>
+                                        <textarea
+                                            id="delivery-notes"
+                                            rows="3"
+                                            placeholder="Ej: Tocar el timbre 2 veces, dejar en portería..."
+                                            value={customerInfo.notes}
+                                            onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                        ></textarea>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xl font-bold text-gray-900 mt-6">
+                                        <span>Total:</span>
+                                        <span>${cartTotal.toLocaleString('es-AR')}</span>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-green-500 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+                                    >
+                                        <CheckIcon className="w-6 h-6" />
+                                        <span>Enviar Pedido por WhatsApp</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* General Message Modal */}
+                    {isMessageModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
+                            <div ref={messageModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-sm relative p-6 text-center">
+                                <button
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                    onClick={closeMessageModal}
+                                >
+                                    <XIcon className="w-7 h-7" />
+                                </button>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-4">{messageModalContent.title}</h3>
+                                <p className="text-gray-700 mb-6">{messageModalContent.text}</p>
+                                <button
+                                    className="bg-blue-500 text-white py-2 px-6 rounded-full text-lg font-semibold shadow-lg hover:bg-blue-600 transition-colors"
+                                    onClick={closeMessageModal}
+                                >
+                                    Entendido
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Renderiza la aplicación React en el elemento con id="root"
+        const container = document.getElementById('root');
+        try { // Added try-catch block
+            const root = ReactDOM.createRoot(container);
+            root.render(<App />);
+            console.log("Aplicación de Pedidos: React app renderizada exitosamente."); // Added success log
+        } catch (error) {
+            console.error("Aplicación de Pedidos: Error al renderizar la aplicación React:", error); // Added error log
+        }
+    </script>
+</body>
+</html>
