@@ -78,6 +78,8 @@
     <div id="root" class="w-full"></div>
 
     <script type="text/babel">
+        console.log("Aplicación de Pedidos: Script React cargando..."); // Added console log
+
         const { useState, useEffect, useRef } = React;
         const ReactDOM = window.ReactDOM;
 
@@ -1057,8 +1059,13 @@
 
         // Renderiza la aplicación React en el elemento con id="root"
         const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<App />);
+        try { // Added try-catch block
+            const root = ReactDOM.createRoot(container);
+            root.render(<App />);
+            console.log("Aplicación de Pedidos: React app renderizada exitosamente."); // Added success log
+        } catch (error) {
+            console.error("Aplicación de Pedidos: Error al renderizar la aplicación React:", error); // Added error log
+        }
     </script>
 </body>
 </html>
