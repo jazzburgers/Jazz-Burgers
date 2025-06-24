@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos Online</title>
+    <title>Jazz Burgers | Pedidos Online</title> <!-- Título actualizado -->
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Babel para transpilar JSX en el navegador (solo para desarrollo/ejemplo simple) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -16,60 +16,128 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* Color de fondo suave */
+            scroll-behavior: smooth; /* Desplazamiento suave para anclas */
         }
         /* Estilos generales para botones y elementos redondeados */
         .btn-primary {
-            background-color: #f97316; /* Naranja principal */
+            background-color: #ef4444; /* Rojo vibrante, similar a la referencia */
             color: white;
             padding: 12px 24px;
-            border-radius: 9999px; /* Totalmente redondeado */
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 9999px; /* Totalmente redondeado (pill shape) */
+            font-weight: 700; /* Más audaz */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3); /* Sombra más pronunciada */
         }
         .btn-primary:hover {
-            background-color: #ea580c;
+            background-color: #dc2626; /* Rojo más oscuro al pasar el ratón */
+            transform: translateY(-2px); /* Pequeño efecto de elevación */
         }
         .btn-secondary {
-            background-color: #22c55e; /* Verde para acciones positivas */
+            background-color: #3b82f6; /* Azul para acciones secundarias */
             color: white;
             padding: 8px 16px;
             border-radius: 9999px;
             font-weight: 500;
             transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
         .btn-secondary:hover {
-            background-color: #16a34a;
+            background-color: #2563eb;
         }
         .card {
             background-color: white;
-            border-radius: 1rem; /* Bordes redondeados */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 1.5rem; /* Bordes aún más redondeados */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Sombra más suave y dispersa */
         }
         input[type="text"],
         input[type="number"],
         textarea {
-            border-radius: 0.5rem; /* Bordes redondeados para campos de entrada */
+            border-radius: 0.75rem; /* Bordes más redondeados para campos de entrada */
             border: 1px solid #d1d5db;
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.25rem; /* Mayor padding */
             width: 100%;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         input[type="text"]:focus,
         input[type="number"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #f97316; /* Borde naranja al enfocar */
+            border-color: #ef4444; /* Borde rojo al enfocar */
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2); /* Sombra de enfoque */
         }
         .modal {
-            background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente para el modal */
-            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente más oscuro para el modal */
+            z-index: 1000;
         }
         .modal-content {
+            border-radius: 2rem; /* Bordes muy redondeados para el modal */
+            max-width: 95%; /* Un poco más de ancho en móviles */
+            width: 600px; /* Ancho en escritorio */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
+            animation: slideUp 0.3s ease-out; /* Animación de entrada */
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal.hidden .modal-content {
+            animation: slideDown 0.3s ease-in forwards; /* Animación de salida */
+        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+        /* Estilos específicos para botones de cantidad en el modal */
+        .quantity-btn {
+            background-color: #fca5a5; /* Rojo muy claro */
+            color: #b91c1c; /* Rojo oscuro */
+            border-radius: 9999px;
+            padding: 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+        .quantity-btn:hover {
+            background-color: #f87171; /* Rojo un poco más oscuro */
+        }
+        /* Estilos para las opciones de radio/checkbox */
+        .option-label {
+            background-color: #fef2f2; /* Rojo muy claro para fondo de opciones */
+            border: 2px solid #fca5a5; /* Borde rojo claro */
             border-radius: 1rem;
-            max-width: 90%; /* Ancho máximo en móviles */
-            width: 500px; /* Ancho en escritorio */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            padding: 1rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #fee2e2;
+        }
+        .option-label input[type="radio"]:checked + span,
+        .option-label input[type="checkbox"]:checked + span {
+            color: #ef4444; /* Texto rojo cuando está seleccionado */
+            font-weight: 600;
+        }
+        .option-label input[type="radio"]:checked,
+        .option-label input[type="checkbox"]:checked {
+            accent-color: #ef4444; /* Color del círculo o cuadrado de selección */
+        }
+
+        /* Estilo para la barra de categorías en móviles (scrollable) */
+        .category-nav::-webkit-scrollbar {
+            display: none; /* Oculta la barra de desplazamiento en Webkit */
+        }
+        .category-nav {
+            -ms-overflow-style: none;  /* Oculta la barra de desplazamiento en IE/Edge */
+            scrollbar-width: none;  /* Oculta la barra de desplazamiento en Firefox */
         }
     </style>
 </head>
@@ -105,21 +173,21 @@
         const BurgerIcon = ({ className = 'w-5 h-5' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 17a8 8 0 0 1-5-1.8L2 22l4-2h8a8 8 0 0 0 0-16H4.2l-2.4 2.8A12 12 0 0 0 11 17z" /><path d="M22 17h-1a8 8 0 0 0-7-7V2.5L22 10z" /></svg>
         );
-        const SoupIcon = ({ className = 'w-5 h-5' }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7 21h10" /><path d="M12 17v4" /><path d="M10 21h4" /><path d="M21 15c0-1.7-1.3-3-3-3H6c-1.7 0-3 1.3-3 3v2c0 1.7 1.3 3 3 3h12c1.7 0 3-1.3 3-3v-2z" /><path d="M12 3a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4h-2V7a4 4 0 0 1 4-4z" /></svg>
+        const FriesIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para papas fritas/acompañamientos */
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 13V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M10 13V7h4v6" /><path d="M12 19v3" /><path d="M8 19v3" /><path d="M16 19v3" /></svg>
         );
-        const CupSodaIcon = ({ className = 'w-5 h-5' }) => (
+        const DrinkIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para bebidas */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6" /><path d="M10 12h4v-2.5a2.5 2.5 0 0 0-2.5-2.5h-2.5V2h4" /><path d="M12 18v2" /></svg>
         );
-        const CookieIcon = ({ className = 'w-5 h-5' }) => (
+        const DessertIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para postres */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /><path d="M8.5 10a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 10z" /><path d="M14 7a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 14 7z" /><path d="M15.5 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14z" /><path d="M10 15.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 10 15.5z" /></svg>
         );
         const SparklesIcon = ({ className = 'w-6 h-6' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <path d="M9.9 2.5l-.23.63a1.8 1.8 0 0 1-1.63 1.25L5.26 4.67l.63-.23a1.8 1.8 0 0 1 1.25-1.63l.7-.26a1.8 1.8 0 0 1 1.63 1.25z" />
                 <path d="M12 11l.23-.63a1.8 1.8 0 0 0 1.63-1.25L17.74 9.33l-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
-                <path d="M10 21.5l.23-.63a1.8 1.8 0 = 0 0 1.63-1.25l2.8-.26-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
-                <path d="M2.5 12l.63.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63z" />
+                <path d="M10 21.5l.23-.63a1.8 1.8 0 0 0 1.63-1.25l2.8-.26-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
+                <path d="M2.5 12l.63.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63z" />
             </svg>
         );
 
@@ -134,18 +202,19 @@
             const categories = [
                 { id: 'all', name: 'Todo', icon: <HomeIcon className="w-5 h-5" /> },
                 { id: 'hamburguesas', name: 'Hamburguesas', icon: <BurgerIcon className="w-5 h-5" /> },
-                { id: 'papas-fritas', name: 'Papas Fritas', icon: <SoupIcon className="w-5 h-5" /> },
-                { id: 'bebidas', name: 'Bebidas', icon: <CupSodaIcon className="w-5 h-5" /> },
-                { id: 'postres', name: 'Postres', icon: <CookieIcon className="w-5 h-5" /> },
+                { id: 'acompanamientos', name: 'Acompañamientos', icon: <FriesIcon className="w-5 h-5" /> }, // Renamed from papas-fritas
+                { id: 'bebidas', name: 'Bebidas', icon: <DrinkIcon className="w-5 h-5" /> },
+                { id: 'postres', name: 'Postres', icon: <DessertIcon className="w-5 h-5" /> },
             ];
 
             const products = [
+                // Hamburguesas
                 {
                     id: 'hamburguesa-clasica',
                     name: 'Hamburguesa Clásica',
                     description: 'La clásica de la casa con lechuga, tomate y cebolla.',
                     price: 3500,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Cl%C3%A1sica',
+                    image: 'https://placehold.co/400x300/f87171/FFFFFF?text=Cl%C3%A1sica',
                     category: 'hamburguesas',
                     options: {
                         pattyCount: {
@@ -183,7 +252,7 @@
                     name: 'Hamburguesa Especial',
                     description: 'Con cebolla caramelizada, queso azul y rúcula.',
                     price: 4200,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Especial',
+                    image: 'https://placehold.co/400x300/f87171/FFFFFF?text=Especial',
                     category: 'hamburguesas',
                     options: {
                         pattyCount: {
@@ -206,29 +275,49 @@
                     }
                 },
                 {
+                    id: 'hamburguesa-vegana',
+                    name: 'Hamburguesa Vegana',
+                    description: 'Medallón de lentejas, espinaca, tomate, pepinillos y veganesa.',
+                    price: 3800,
+                    image: 'https://placehold.co/400x300/84cc16/FFFFFF?text=Vegana',
+                    category: 'hamburguesas',
+                    options: null
+                },
+                // Acompañamientos
+                {
                     id: 'papas-grandes',
                     name: 'Papas Fritas Grandes',
                     description: 'Porción abundante de papas fritas.',
                     price: 1500,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Papas+Grandes',
-                    category: 'papas-fritas',
-                    options: null // No customization for this product
+                    image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Papas+Grandes',
+                    category: 'acompanamientos',
+                    options: null
                 },
                 {
                     id: 'papas-cheddar-bacon',
                     name: 'Papas Cheddar y Bacon',
                     description: 'Papas con abundante cheddar y crocante bacon.',
                     price: 2200,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Cheddar+Bacon',
-                    category: 'papas-fritas',
+                    image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Cheddar+Bacon',
+                    category: 'acompanamientos',
                     options: null
                 },
+                {
+                    id: 'aros-cebolla',
+                    name: 'Aros de Cebolla',
+                    description: 'Crocantes aros de cebolla rebozados.',
+                    price: 1600,
+                    image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Aros+Cebolla',
+                    category: 'acompanamientos',
+                    options: null
+                },
+                // Bebidas
                 {
                     id: 'gaseosa-lata',
                     name: 'Gaseosa Lata',
                     description: 'Coca-Cola, Sprite, Fanta (354ml).',
                     price: 700,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Gaseosa+Lata',
+                    image: 'https://placehold.co/400x300/60a5fa/FFFFFF?text=Gaseosa+Lata',
                     category: 'bebidas',
                     options: {
                         sabor: {
@@ -248,16 +337,26 @@
                     name: 'Agua Mineral 500ml',
                     description: 'Agua mineral sin gas.',
                     price: 500,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Agua+Mineral',
+                    image: 'https://placehold.co/400x300/60a5fa/FFFFFF?text=Agua+Mineral',
                     category: 'bebidas',
                     options: null
                 },
+                {
+                    id: 'limonada-menta-jengibre',
+                    name: 'Limonada Menta y Jengibre',
+                    description: 'Refrescante limonada natural con toque de menta y jengibre.',
+                    price: 950,
+                    image: 'https://placehold.co/400x300/60a5fa/FFFFFF?text=Limonada',
+                    category: 'bebidas',
+                    options: null
+                },
+                // Postres
                 {
                     id: 'helado-chocolate',
                     name: 'Helado de Chocolate',
                     description: 'Cremoso helado de chocolate.',
                     price: 1200,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Helado+Chocolate',
+                    image: 'https://placehold.co/400x300/c084fc/FFFFFF?text=Helado+Chocolate',
                     category: 'postres',
                     options: null
                 },
@@ -266,7 +365,16 @@
                     name: 'Brownie con Nuez',
                     description: 'Delicioso brownie húmedo con trozos de nuez.',
                     price: 1500,
-                    image: 'https://placehold.co/400x300/FACC15/FFFFFF?text=Brownie',
+                    image: 'https://placehold.co/400x300/c084fc/FFFFFF?text=Brownie',
+                    category: 'postres',
+                    options: null
+                },
+                {
+                    id: 'tarta-queso',
+                    name: 'Tarta de Queso',
+                    description: 'Clásica tarta de queso con base de galleta.',
+                    price: 1800,
+                    image: 'https://placehold.co/400x300/c084fc/FFFFFF?text=Tarta+Queso',
                     category: 'postres',
                     options: null
                 }
@@ -664,37 +772,48 @@
                 };
             }, [isCartOpen, isProductModalOpen, isCheckoutModalOpen, isMessageModalOpen]); // Dependencias para useEffect
 
+            // Función para hacer scroll suave a la categoría
+            const scrollToCategory = (categoryId) => {
+                const element = document.getElementById(`category-${categoryId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            };
+
 
             return (
                 <div className="min-h-screen flex flex-col bg-gray-100 font-inter text-gray-800">
-                    {/* Header */}
-                    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-xl">
+                    {/* Header (Solo para móvil - flotante en la parte superior) */}
+                    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-xl md:hidden">
                         <div className="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/FF5733/FFFFFF?text=Logo" alt="Logo" className="rounded-full" />
-                            <h1 className="text-2xl font-bold text-gray-900">Tu Pedido Online</h1>
+                            <img src="https://placehold.co/40x40/ef4444/FFFFFF?text=Logo" alt="Logo Jazz Burgers" className="rounded-full" />
+                            <h1 className="text-2xl font-bold text-gray-900">Jazz Burgers</h1>
                         </div>
-                        <button
-                            className="relative p-3 bg-yellow-500 text-white rounded-full shadow-lg hover:bg-yellow-600 transition-colors"
-                            onClick={() => setIsCartOpen(!isCartOpen)}
-                        >
-                            <ShoppingCartIcon className="w-6 h-6" />
-                            {cart.length > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce">
-                                    {cart.length}
-                                </span>
-                            )}
-                        </button>
+                         {/* Botón de carrito movido al flotante */}
                     </header>
 
-                    {/* Category Tabs */}
-                    <nav className="bg-white shadow-sm p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-[68px] z-30 border-b border-gray-200 rounded-b-xl">
+                    {/* Hero Section (visible solo en desktop y tablet, o en mobile si está al inicio de la página) */}
+                    <section className="hidden md:block w-full bg-cover bg-center h-64 md:h-80 lg:h-96 relative rounded-b-xl overflow-hidden" style={{backgroundImage: 'url(https://placehold.co/1200x500/ef4444/FFFFFF?text=Bienvenido+a+Jazz+Burgers)'}}>
+                        <div className="absolute inset-0 bg-black opacity-40"></div>
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-4">
+                            <h2 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Jazz Burgers</h2>
+                            <p className="text-xl md:text-2xl font-medium drop-shadow-lg">Las mejores hamburguesas de la ciudad.</p>
+                        </div>
+                    </section>
+
+
+                    {/* Category Tabs (Fijo en la parte superior, con scroll horizontal en móviles) */}
+                    <nav className="bg-white shadow-md p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-0 md:top-[0px] z-30 border-b border-gray-200 rounded-b-xl category-nav">
                         {categories.map(category => (
                             <button
                                 key={category.id}
-                                onClick={() => setSelectedCategory(category.id)}
-                                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap
+                                onClick={() => {
+                                    setSelectedCategory(category.id);
+                                    scrollToCategory(category.id);
+                                }}
+                                className={`flex items-center px-5 py-2 rounded-full text-base font-medium transition-colors whitespace-nowrap shadow-sm
                                     ${selectedCategory === category.id
-                                        ? 'bg-orange-500 text-white shadow-md'
+                                        ? 'bg-red-600 text-white shadow-lg transform scale-105'
                                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                             >
@@ -706,43 +825,58 @@
 
                     {/* Main Content Area */}
                     <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {filteredProducts.length === 0 ? (
-                                <p className="col-span-full text-center text-gray-600 text-lg py-10">
-                                    No hay productos en esta categoría.
-                                </p>
-                            ) : (
-                                filteredProducts.map(product => (
-                                    <div
-                                        key={product.id}
-                                        className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer"
-                                        onClick={() => openProductModal(product)}
-                                    >
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                        <div className="p-4 flex-grow flex flex-col justify-between">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-                                            <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
-                                            <div className="flex justify-between items-center mt-auto">
-                                                <span className="text-lg font-semibold text-orange-600">
-                                                    ${product.price.toLocaleString('es-AR')}
-                                                </span>
-                                                <button
-                                                    className="bg-green-500 text-white p-2 rounded-full shadow-md hover:bg-green-600 transition-colors"
-                                                    onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
-                                                >
-                                                    <PlusIcon className="w-5 h-5" />
-                                                </button>
+                        {categories.map(category => (
+                            <section key={category.id} id={`category-${category.id}`} className="mb-8">
+                                <h2 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-500 pb-2">
+                                    {category.name}
+                                </h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                    {products.filter(p => selectedCategory === 'all' || p.category === category.id).map(product => (
+                                        <div
+                                            key={product.id}
+                                            className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
+                                            onClick={() => openProductModal(product)}
+                                        >
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="w-full h-48 object-cover rounded-t-2xl"
+                                            />
+                                            <div className="p-4 flex-grow flex flex-col justify-between">
+                                                <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
+                                                <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
+                                                <div className="flex justify-between items-center mt-auto">
+                                                    <span className="text-2xl font-extrabold text-red-600">
+                                                        ${product.price.toLocaleString('es-AR')}
+                                                    </span>
+                                                    <button
+                                                        className="bg-red-500 text-white p-3 rounded-full shadow-md hover:bg-red-600 transition-colors"
+                                                        onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
+                                                    >
+                                                        <PlusIcon className="w-6 h-6" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))
-                            )}
-                        </section>
+                                    ))}
+                                </div>
+                            </section>
+                        ))}
                     </main>
+
+                    {/* Floating Cart Button */}
+                    <button
+                        className="fixed bottom-6 right-6 p-4 bg-red-600 text-white rounded-full shadow-2xl hover:bg-red-700 transition-all duration-300 transform scale-100 hover:scale-110 z-50"
+                        onClick={() => setIsCartOpen(!isCartOpen)}
+                    >
+                        <ShoppingCartIcon className="w-8 h-8" />
+                        {cart.length > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce border-2 border-white">
+                                {cart.length}
+                            </span>
+                        )}
+                    </button>
+
 
                     {/* Cart Sidebar */}
                     <div
@@ -787,18 +921,18 @@
                                                     return null;
                                                 }).filter(Boolean).join('')}
                                             </p>
-                                            <p className="text-md font-medium text-green-600">$ {(item.price + item.optionPrice).toLocaleString('es-AR')}</p>
+                                            <p className="text-md font-medium text-red-600">$ {(item.price + item.optionPrice).toLocaleString('es-AR')}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <button
-                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors quantity-btn"
                                                 onClick={() => decreaseCartItemQuantity(item.uniqueId)}
                                             >
                                                 <MinusIcon className="w-4 h-4" />
                                             </button>
                                             <span className="font-semibold text-lg w-6 text-center">{item.quantity}</span>
                                             <button
-                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors"
+                                                className="bg-gray-200 text-gray-700 p-1 rounded-full hover:bg-gray-300 transition-colors quantity-btn"
                                                 onClick={() => increaseCartItemQuantity(item.uniqueId)}
                                             >
                                                 <PlusIcon className="w-4 h-4" />
@@ -821,7 +955,7 @@
                                 <span>${cartTotal.toLocaleString('es-AR')}</span>
                             </div>
                             <button
-                                className="w-full bg-orange-500 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full btn-primary py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={openCheckoutModal}
                                 disabled={cart.length === 0}
                             >
@@ -832,10 +966,10 @@
 
                     {/* Product Customization Modal */}
                     {isProductModalOpen && selectedProduct && (
-                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
-                            <div ref={productModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end md:items-center justify-center p-0 md:p-4 z-[1000]"> {/* Ajustado para aparecer desde abajo en móvil */}
+                            <div ref={productModalRef} className="modal-content bg-white w-full h-[90vh] md:h-auto overflow-y-auto relative p-6 flex flex-col"> {/* Ajustado altura y flex-col */}
                                 <button
-                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors z-10"
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full bg-white hover:bg-gray-100 transition-colors z-20"
                                     onClick={closeProductModal}
                                 >
                                     <XIcon className="w-7 h-7" />
@@ -843,34 +977,34 @@
                                 <img
                                     src={selectedProduct.image}
                                     alt={selectedProduct.name}
-                                    className="w-full h-56 object-cover"
+                                    className="w-full h-64 md:h-72 object-cover rounded-xl mb-4 md:mb-6 flex-shrink-0"
                                 />
-                                <div className="p-6">
-                                    <h3 className="text-3xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h3>
-                                    <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+                                <div className="flex-grow flex flex-col"> {/* Contenido interno del modal */}
+                                    <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">{selectedProduct.name}</h3>
+                                    <p className="text-gray-600 mb-4 text-base md:text-lg">{selectedProduct.description}</p>
 
                                     {selectedProduct.options && (
-                                        <div className="space-y-6 mb-6">
+                                        <div className="space-y-6 mb-6 flex-grow overflow-y-auto pr-2 -mr-2"> {/* Scroll para opciones */}
                                             {Object.keys(selectedProduct.options).map(optionKey => {
                                                 const optionConfig = selectedProduct.options[optionKey];
                                                 return (
                                                     <div key={optionKey} className="border-t pt-4 border-gray-200">
                                                         <h4 className="text-lg font-semibold text-gray-800 mb-3">{optionConfig.label}</h4>
                                                         {optionConfig.type === 'radio' && (
-                                                            <div className="space-y-2">
+                                                            <div className="space-y-3"> {/* Mayor espacio entre opciones */}
                                                                 {optionConfig.choices.map(choice => (
-                                                                    <label key={choice.value} className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                                    <label key={choice.value} className="flex items-center p-4 option-label cursor-pointer">
                                                                         <input
                                                                             type="radio"
                                                                             name={optionKey}
                                                                             value={choice.value}
                                                                             checked={customizationOptions[optionKey] === choice.value}
                                                                             onChange={() => handleOptionChange(optionKey, choice.value, 'radio')}
-                                                                            className="form-radio h-5 w-5 text-orange-500 focus:ring-orange-400"
+                                                                            className="form-radio h-6 w-6 text-red-500 focus:ring-red-400"
                                                                         />
-                                                                        <span className="ml-3 text-gray-700 font-medium flex-grow">{choice.label}</span>
+                                                                        <span className="ml-4 text-gray-800 font-medium text-lg flex-grow">{choice.label}</span>
                                                                         {choice.price > 0 && (
-                                                                            <span className="text-sm text-gray-600">
+                                                                            <span className="text-md text-gray-700">
                                                                                 +${choice.price.toLocaleString('es-AR')}
                                                                             </span>
                                                                         )}
@@ -879,18 +1013,18 @@
                                                             </div>
                                                         )}
                                                         {optionConfig.type === 'checkbox' && (
-                                                            <div className="space-y-2">
+                                                            <div className="space-y-3"> {/* Mayor espacio entre opciones */}
                                                                 {optionConfig.choices.map(choice => (
-                                                                    <label key={choice.value} className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                                    <label key={choice.value} className="flex items-center p-4 option-label cursor-pointer">
                                                                         <input
                                                                             type="checkbox"
                                                                             checked={customizationOptions[optionKey]?.includes(choice.value) || false}
                                                                             onChange={() => handleOptionChange(optionKey, choice.value, 'checkbox')}
-                                                                            className="form-checkbox h-5 w-5 text-green-500 rounded focus:ring-green-400"
+                                                                            className="form-checkbox h-6 w-6 text-red-500 rounded focus:ring-red-400"
                                                                         />
-                                                                        <span className="ml-3 text-gray-700 font-medium flex-grow">{choice.label}</span>
+                                                                        <span className="ml-4 text-gray-800 font-medium text-lg flex-grow">{choice.label}</span>
                                                                         {choice.price > 0 && (
-                                                                            <span className="text-sm text-gray-600">
+                                                                            <span className="text-md text-gray-700">
                                                                                 +${choice.price.toLocaleString('es-AR')}
                                                                             </span>
                                                                         )}
@@ -905,7 +1039,7 @@
                                     )}
 
                                     {/* Gemini LLM Recommendation Section */}
-                                    <div className="mt-6 mb-6 border-t pt-4 border-gray-200">
+                                    <div className="mt-6 mb-6 border-t pt-4 border-gray-200 flex-shrink-0"> {/* flex-shrink-0 para que no se contraiga */}
                                         <button
                                             onClick={getChefRecommendation}
                                             className="w-full bg-purple-600 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -939,10 +1073,10 @@
                                         )}
                                     </div>
 
-                                    <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-6 flex-shrink-0"> {/* flex-shrink-0 */}
                                         <div className="flex items-center space-x-3">
                                             <button
-                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed quantity-btn"
                                                 onClick={() => setItemQuantity(prev => Math.max(1, prev - 1))}
                                                 disabled={itemQuantity === 1}
                                             >
@@ -950,14 +1084,14 @@
                                             </button>
                                             <span className="text-xl font-bold w-8 text-center">{itemQuantity}</span>
                                             <button
-                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors"
+                                                className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors quantity-btn"
                                                 onClick={() => setItemQuantity(prev => prev + 1)}
                                             >
                                                 <PlusIcon className="w-5 h-5" />
                                             </button>
                                         </div>
                                         <button
-                                            className="bg-orange-500 text-white py-3 px-6 rounded-full text-lg font-semibold shadow-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                                            className="btn-primary py-3 px-6 rounded-full text-lg font-semibold shadow-lg hover:bg-red-600 transition-colors flex items-center space-x-2"
                                             onClick={addItemToCart}
                                         >
                                             <span>Agregar</span>
@@ -971,10 +1105,10 @@
 
                     {/* Checkout Modal */}
                     {isCheckoutModalOpen && (
-                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
-                            <div ref={checkoutModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-md relative p-6">
+                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[1000]">
+                            <div ref={checkoutModalRef} className="modal-content bg-white w-full max-w-md relative p-6">
                                 <button
-                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full bg-white hover:bg-gray-100 transition-colors"
                                     onClick={closeCheckoutModal}
                                 >
                                     <XIcon className="w-7 h-7" />
@@ -990,7 +1124,7 @@
                                             value={customerInfo.name}
                                             onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
                                             required
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                         />
                                     </div>
                                     <div>
@@ -1002,7 +1136,7 @@
                                             value={customerInfo.address}
                                             onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
                                             required
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                         />
                                     </div>
                                     <div>
@@ -1013,7 +1147,7 @@
                                             placeholder="Ej: Tocar el timbre 2 veces, dejar en portería..."
                                             value={customerInfo.notes}
                                             onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                                         ></textarea>
                                     </div>
                                     <div className="flex justify-between items-center text-xl font-bold text-gray-900 mt-6">
@@ -1034,10 +1168,10 @@
 
                     {/* General Message Modal */}
                     {isMessageModalOpen && (
-                        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[1000]">
-                            <div ref={messageModalRef} className="bg-white rounded-xl shadow-2xl w-full max-w-sm relative p-6 text-center">
+                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[1000]">
+                            <div ref={messageModalRef} className="modal-content bg-white w-full max-w-sm relative p-6 text-center">
                                 <button
-                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full bg-white hover:bg-gray-100 transition-colors"
                                     onClick={closeMessageModal}
                                 >
                                     <XIcon className="w-7 h-7" />
