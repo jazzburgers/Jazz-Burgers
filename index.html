@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jazz Burgers | Pedidos Online</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Babel para transpilar JSX en el navegador (solo para desarrollo/ejemplo simple) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -72,7 +74,7 @@
             max-width: 95%; /* Un poco más de ancho en móviles */
             width: 600px; /* Ancho en escritorio */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
-            animation: slideUp 0.3s ease-out; /* Animación de entrada */
+            animation: slideUp 0.3s ease-out; /* Animación de entrada por defecto */
         }
         /* Para hacer que el modal aparezca desde abajo en móviles */
         @media (max-width: 767px) {
@@ -82,6 +84,7 @@
                 border-bottom-right-radius: 0;
                 height: 90vh; /* Ocupa la mayor parte de la pantalla verticalmente */
             }
+            /* Asegurar que la animación de salida para móvil también sea desde abajo */
             .modal.hidden .modal-content {
                 animation: slideDownMobile 0.3s ease-in forwards;
             }
@@ -107,8 +110,9 @@
                 opacity: 1;
             }
         }
+        /* Animación de salida para desktop */
         .modal.hidden .modal-content {
-            animation: slideDown 0.3s ease-in forwards; /* Animación de salida */
+            animation: slideDown 0.3s ease-in forwards;
         }
         @keyframes slideDown {
             from {
@@ -173,6 +177,7 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
+    <!-- Contenedor donde se montará la aplicación React -->
     <div id="root" class="w-full"></div>
 
     <script type="text/babel">
@@ -181,8 +186,7 @@
         const { useState, useEffect, useRef } = React;
         const ReactDOM = window.ReactDOM;
 
-        // Inline SVG Icons (reemplazando Lucide React)
-        // Se utilizan SVG en línea para reducir dependencias externas y simplificar el despliegue.
+        // Inline SVG Icons
         const ShoppingCartIcon = ({ className = 'w-6 h-6' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 12.87a2 2 0 0 0 2 1.13h9.43a2 2 0 0 0 2-1.13L23 6H6" /></svg>
         );
@@ -204,23 +208,73 @@
         const BurgerIcon = ({ className = 'w-5 h-5' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 17a8 8 0 0 1-5-1.8L2 22l4-2h8a8 8 0 0 0 0-16H4.2l-2.4 2.8A12 12 0 0 0 11 17z" /><path d="M22 17h-1a8 8 0 0 0-7-7V2.5L22 10z" /></svg>
         );
-        const FriesIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para papas fritas/acompañamientos */
+        const FriesIcon = ({ className = 'w-5 h-5' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 13V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M10 13V7h4v6" /><path d="M12 19v3" /><path d="M8 19v3" /><path d="M16 19v3" /></svg>
         );
-        const DrinkIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para bebidas */
+        const DrinkIcon = ({ className = 'w-5 h-5' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6" /><path d="M10 12h4v-2.5a2.5 2.5 0 0 0-2.5-2.5h-2.5V2h4" /><path d="M12 18v2" /></svg>
         );
-        const DessertIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para postres */
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /><path d="M8.5 10a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 10z" /><path d="M14 7a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 14 7z" /><path d="M15.5 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14z" /><path d="M10 15.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 10 15.5z" /></svg>
+        const DessertIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /><path d="M8.5 10a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0
+                 0 0 8.5 10z" /><path d="M14 7a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 14 7z" /><path d="M15.5 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14z" /><path d="M10 15.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 10 15.5z" /></svg>
         );
-        const SparklesIcon = ({ className = 'w-6 h-6' }) => ( /* Icono para la recomendación de IA */
+        const SparklesIcon = ({ className = 'w-6 h-6' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <path d="M9.9 2.5l-.23.63a1.8 1.8 0 0 1-1.63 1.25L5.26 4.67l.63-.23a1.8 1.8 0 0 1 1.25-1.63l.7-.26a1.8 1.8 0 0 1 1.63 1.25z" />
                 <path d="M12 11l.23-.63a1.8 1.8 0 0 0 1.63-1.25L17.74 9.33l-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
-                <path d="M10 21.5l.23-.63a1.8 1.8 0 0 0 1.63-1.25l2.8-.26-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
+                <path d="M10 21.5l.23-.63a1.8 1.8 0 0 0 1.63-1.25l2.8-.26-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0
+                 0 0-1.63-1.25z" />
                 <path d="M2.5 12l.63.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63l.26.7a1.8 1.8 0 0 0 1.63 1.25l.63-.23a1.8 1.8 0 0 0 1.25 1.63z" />
             </svg>
         );
+        const SandwichIcon = ({ className = 'w-5 h-5' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M2 17h20M2 7h20M4 12h16" />
+                <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+            </svg>
+        );
+        const ArrowLeftIcon = ({ className = 'w-6 h-6' }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        );
+
+        // Componente de la página de inicio
+        const LandingPage = ({ onSelectCategory }) => {
+            // Opciones del menú inicial
+            const landingPageOptions = [
+                { id: 'hamburguesas', name: 'Hamburguesas', icon: <BurgerIcon className="w-8 h-8" /> },
+                { id: 'lomitos', name: 'Lomitos', icon: <SandwichIcon className="w-8 h-8" /> },
+                { id: 'papas-fritas', name: 'Papas Fritas', icon: <FriesIcon className="w-8 h-8" /> },
+                { id: 'extras', name: 'Extras', icon: <PlusIcon className="w-8 h-8" /> },
+            ];
+
+            return (
+                <div className="fixed inset-0 bg-red-700 flex flex-col items-center justify-center p-4 text-white z-[1001]">
+                    <img src="https://placehold.co/100x100/FFFFFF/ef4444?text=JB" alt="Logo Jazz Burgers" className="rounded-full mb-6 shadow-lg" />
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-10 drop-shadow-md">
+                        Jazz Burgers
+                    </h1>
+                    <p className="text-xl md:text-2xl text-center mb-12 max-w-md">
+                        Elige tu aventura culinaria.
+                    </p>
+                    <div className="grid grid-cols-2 gap-6 w-full max-w-lg">
+                        {landingPageOptions.map(option => (
+                            <button
+                                key={option.id}
+                                className="bg-white text-red-700 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 flex flex-col items-center justify-center space-y-3 font-semibold text-lg md:text-xl"
+                                onClick={() => onSelectCategory(option.id)}
+                            >
+                                {option.icon}
+                                <span>{option.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <p className="mt-12 text-sm text-red-200">
+                        ¡Explora nuestro menú completo después!
+                    </p>
+                </div>
+            );
+        };
+
 
         // Componente principal de la aplicación
         const App = () => {
@@ -237,13 +291,15 @@
             const categories = [
                 { id: 'all', name: 'Todo', icon: <HomeIcon className="w-5 h-5" /> },
                 { id: 'hamburguesas', name: 'Hamburguesas', icon: <BurgerIcon className="w-5 h-5" /> },
-                { id: 'acompanamientos', name: 'Acompañamientos', icon: <FriesIcon className="w-5 h-5" /> },
+                { id: 'lomitos', name: 'Lomitos', icon: <SandwichIcon className="w-5 h-5" /> }, // Nueva categoría
+                { id: 'papas-fritas', name: 'Papas Fritas', icon: <FriesIcon className="w-5 h-5" /> }, // Categoría renombrada
+                { id: 'extras', name: 'Extras', icon: <SparklesIcon className="w-5 h-5" /> }, // Nueva categoría
                 { id: 'bebidas', name: 'Bebidas', icon: <DrinkIcon className="w-5 h-5" /> },
                 { id: 'postres', name: 'Postres', icon: <DessertIcon className="w-5 h-5" /> },
             ];
 
             const products = [
-                // Hamburguesas
+                // Hamburguesas existentes
                 {
                     id: 'hamburguesa-clasica',
                     name: 'Hamburguesa Clásica',
@@ -318,14 +374,42 @@
                     category: 'hamburguesas',
                     options: null
                 },
-                // Acompañamientos
+                // NUEVOS: Lomitos
+                {
+                    id: 'lomito-clasico',
+                    name: 'Lomito Clásico',
+                    description: 'Tierna carne de lomito, lechuga, tomate y mayonesa.',
+                    price: 4000,
+                    image: 'https://placehold.co/400x300/ef4444/FFFFFF?text=Lomito+Clasico',
+                    category: 'lomitos',
+                    options: null
+                },
+                {
+                    id: 'lomito-completo',
+                    name: 'Lomito Completo',
+                    description: 'Lomito con jamón, queso, lechuga, tomate y huevo.',
+                    price: 4800,
+                    image: 'https://placehold.co/400x300/ef4444/FFFFFF?text=Lomito+Completo',
+                    category: 'lomitos',
+                    options: {
+                        extras: {
+                            type: 'checkbox',
+                            label: 'Agregar extra',
+                            choices: [
+                                { value: 'bacon', label: 'Bacon', price: 500 },
+                                { value: 'cebolla-caramelizada', label: 'Cebolla Caramelizada', price: 350 }
+                            ]
+                        }
+                    }
+                },
+                // Papas Fritas y Acompañamientos (categoría renombrada)
                 {
                     id: 'papas-grandes',
                     name: 'Papas Fritas Grandes',
                     description: 'Porción abundante de papas fritas.',
                     price: 1500,
                     image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Papas+Grandes',
-                    category: 'acompanamientos',
+                    category: 'papas-fritas', // Categoría actualizada
                     options: null
                 },
                 {
@@ -334,7 +418,7 @@
                     description: 'Papas con abundante cheddar y crocante bacon.',
                     price: 2200,
                     image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Cheddar+Bacon',
-                    category: 'acompanamientos',
+                    category: 'papas-fritas', // Categoría actualizada
                     options: null
                 },
                 {
@@ -343,10 +427,38 @@
                     description: 'Crocantes aros de cebolla rebozados.',
                     price: 1600,
                     image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Aros+Cebolla',
-                    category: 'acompanamientos',
+                    category: 'papas-fritas', // Categoría actualizada
                     options: null
                 },
-                // Bebidas
+                // NUEVOS: Extras (adicionales, ej. porciones de ingredientes)
+                {
+                    id: 'extra-queso-cheddar',
+                    name: 'Extra Queso Cheddar (Porción)',
+                    description: 'Porción extra de queso cheddar fundido para cualquier plato.',
+                    price: 600,
+                    image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Extra+Cheddar',
+                    category: 'extras',
+                    options: null
+                },
+                {
+                    id: 'extra-bacon-crocante',
+                    name: 'Extra Bacon Crocante (Porción)',
+                    description: 'Porción de bacon crocante para añadir a tu gusto.',
+                    price: 700,
+                    image: 'https://placehold.co/400x300/fbbf24/FFFFFF?text=Extra+Bacon',
+                    category: 'extras',
+                    options: null
+                },
+                {
+                    id: 'extra-salsa-especial',
+                    name: 'Extra Salsa Especial',
+                    description: 'Pequeña porción de nuestra salsa especial de la casa.',
+                    price: 250,
+                    image: 'https://placehold.co/400x300/60a5fa/FFFFFF?text=Salsa+Especial',
+                    category: 'extras',
+                    options: null
+                },
+                // Bebidas existentes
                 {
                     id: 'gaseosa-lata',
                     name: 'Gaseosa Lata',
@@ -385,7 +497,7 @@
                     category: 'bebidas',
                     options: null
                 },
-                // Postres
+                // Postres existentes
                 {
                     id: 'helado-chocolate',
                     name: 'Helado de Chocolate',
@@ -416,6 +528,7 @@
             ];
 
             // Variables de estado
+            const [currentPage, setCurrentPage] = useState('landing'); // 'landing' o 'main'
             const [selectedCategory, setSelectedCategory] = useState('all'); // Categoría de producto seleccionada actualmente
             const [cart, setCart] = useState([]); // Artículos en el carrito de compras
             const [isCartOpen, setIsCartOpen] = useState(false); // Estado de visibilidad de la barra lateral del carrito
@@ -429,6 +542,8 @@
             const [messageModalContent, setMessageModalContent] = useState({ title: '', text: '' }); // Contenido para el modal de mensaje
             const [llmRecommendation, setLlmRecommendation] = useState(null); // Estado para la recomendación del LLM (Gemini)
             const [isLlmLoading, setIsLlmLoading] = useState(false); // Estado para el indicador de carga del LLM
+            const [orderSummaryDescription, setOrderSummaryDescription] = useState(null); // Nuevo: Descripción del resumen del pedido por LLM
+            const [isOrderSummaryLoading, setIsOrderSummaryLoading] = useState(false); // Nuevo: Indicador de carga para el resumen del pedido
 
             // Refs para modales y barra lateral para manejar clics fuera
             const cartRef = useRef(null);
@@ -557,7 +672,7 @@
                 setIsLlmLoading(true);
                 setLlmRecommendation(null); // Borra cualquier recomendación previa
 
-                let promptText = `Dado el plato principal "${selectedProduct.name}" con la descripción "${selectedProduct.description}"`;
+                let promptText = `Actúa como un chef experto. Dado el plato principal "${selectedProduct.name}" con la descripción "${selectedProduct.description}"`;
 
                 // Añade las opciones elegidas al prompt
                 const chosenOptionDetails = Object.keys(customizationOptions)
@@ -602,7 +717,8 @@
                     }
                 };
 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+                const apiKey = GEMINI_API_KEY; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 try {
                     const response = await fetch(apiUrl, {
@@ -638,6 +754,87 @@
                 }
             };
 
+            // --- Nuevo: Integración con Gemini API para Resumen del Pedido ---
+            const generateOrderSummary = async () => {
+                if (cart.length === 0) {
+                    showMessageModal('Carrito Vacío', 'Agrega productos al carrito para generar un resumen.');
+                    return;
+                }
+
+                setIsOrderSummaryLoading(true);
+                setOrderSummaryDescription(null); // Borra el resumen previo
+
+                let orderDetails = cart.map(item => {
+                    let itemDesc = `${item.quantity} ${item.name}`;
+                    if (item.chosenOptions && Object.keys(item.chosenOptions).length > 0) {
+                        const optionStrings = Object.keys(item.chosenOptions).map(optionKey => {
+                            const optionConfig = products.find(p => p.id === item.id)?.options?.[optionKey];
+                            if (!optionConfig) return null;
+                            const selectedValue = item.chosenOptions[optionKey];
+
+                            if (optionConfig.type === 'radio' && selectedValue) {
+                                const choice = optionConfig.choices.find(c => c.value === selectedValue);
+                                return choice?.label;
+                            } else if (optionConfig.type === 'checkbox' && Array.isArray(selectedValue) && selectedValue.length > 0) {
+                                return selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ');
+                            }
+                            return null;
+                        }).filter(Boolean);
+                        if (optionStrings.length > 0) {
+                            itemDesc += ` (${optionStrings.join(', ')})`;
+                        }
+                    }
+                    return itemDesc;
+                }).join('; ');
+
+                const promptText = `Actúa como un chef que describe un pedido para un cliente. Aquí está el detalle del pedido: ${orderDetails}. Crea una descripción concisa y apetitosa de este pedido. No incluyas precios. No uses un formato de lista. Sé creativo y atractivo.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: promptText }] });
+
+                const payload = {
+                    contents: chatHistory,
+                };
+
+                const apiKey = GEMINI_API_KEY; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Error en la respuesta de la API de Gemini para resumen:', response.status, errorData);
+                        setOrderSummaryDescription('No se pudo generar el resumen. Inténtalo de nuevo más tarde.');
+                        showMessageModal('Error en la IA', `No se pudo generar el resumen. Código de error: ${response.status}.`);
+                        return;
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const summary = result.candidates[0].content.parts[0].text;
+                        setOrderSummaryDescription(summary);
+                    } else {
+                        console.error('Estructura de respuesta inesperada del LLM para resumen:', result);
+                        setOrderSummaryDescription('No se pudo generar el resumen. Formato de respuesta inesperado.');
+                        showMessageModal('Error en la IA', 'No se pudo generar el resumen. Formato de respuesta inesperado.');
+                    }
+                } catch (error) {
+                    console.error('Error al llamar a la API de Gemini para resumen:', error);
+                    setOrderSummaryDescription('Error de conexión. Verifica tu clave API o conexión a internet.');
+                    showMessageModal('Error de Conexión', 'No se pudo conectar con el servicio de resumen. Verifica tu conexión o clave API.');
+                } finally {
+                    setIsOrderSummaryLoading(false);
+                }
+            };
+
             // --- Funciones del Carrito ---
 
             /**
@@ -664,6 +861,7 @@
                 showMessageModal('Producto Agregado', `${itemToAdd.name} ${itemToAdd.quantity > 1 ? `(x${itemToAdd.quantity})` : ''} agregado al carrito.`);
                 closeProductModal();
                 setIsCartOpen(true); // Abrir la barra lateral del carrito cuando se agrega un artículo
+                setOrderSummaryDescription(null); // Limpiar resumen al añadir algo nuevo
             };
 
             /**
@@ -676,6 +874,7 @@
                         item.uniqueId === uniqueId ? { ...item, quantity: item.quantity + 1 } : item
                     )
                 );
+                setOrderSummaryDescription(null); // Limpiar resumen al cambiar cantidad
             };
 
             /**
@@ -689,6 +888,7 @@
                         item.uniqueId === uniqueId ? { ...item, quantity: item.quantity - 1 } : item
                     ).filter(item => item.quantity > 0) // Eliminar elementos con cantidad 0
                 );
+                setOrderSummaryDescription(null); // Limpiar resumen al cambiar cantidad
             };
 
             /**
@@ -698,6 +898,7 @@
             const removeCartItem = (uniqueId) => {
                 setCart(prevCart => prevCart.filter(item => item.uniqueId !== uniqueId));
                 showMessageModal('Producto Eliminado', 'Producto eliminado del carrito.');
+                setOrderSummaryDescription(null); // Limpiar resumen al eliminar
             };
 
             // --- Funciones de Pago ---
@@ -731,7 +932,12 @@
                 message += `*Cliente:* ${customerInfo.name}\n`;
                 message += `*Dirección:* ${customerInfo.address}\n\n`;
 
-                message += `*Detalle del Pedido:*\n`;
+                if (orderSummaryDescription) {
+                    message += `*Resumen del Pedido:*\n${orderSummaryDescription}\n\n`;
+                } else {
+                    message += `*Detalle del Pedido:*\n`;
+                }
+                
                 cart.forEach((item, index) => {
                     const itemTotal = (item.price + item.optionPrice) * item.quantity;
                     message += `${index + 1}. *${item.name}* (x${item.quantity}) - $${itemTotal.toLocaleString('es-AR')}\n`;
@@ -782,6 +988,7 @@
                 window.open(whatsappUrl, '_blank'); // Abrir WhatsApp en una nueva pestaña
                 closeCheckoutModal(); // Cerrar el modal de pago
                 setCart([]); // Vaciar el carrito
+                setOrderSummaryDescription(null); // Limpiar el resumen al enviar el pedido
                 showMessageModal('Pedido Enviado', 'Tu pedido ha sido enviado con éxito por WhatsApp. ¡Te contactaremos pronto!');
             };
 
@@ -793,7 +1000,8 @@
                         setIsCartOpen(false);
                     }
                     // Modal de Producto
-                    if (isProductModalOpen && productModalRef.current && !productModalRef.current.contains(event.target)) {
+                    // Usar un check más robusto para que no se cierre si el clic es en el botón de abrir o cualquier elemento que deba activarlo
+                    if (isProductModalOpen && productModalRef.current && !productModalRef.current.contains(event.target) && !event.target.closest('[onClick*="openProductModal"]')) {
                         closeProductModal();
                     }
                     // Modal de Pago
@@ -813,14 +1021,16 @@
             }, [isCartOpen, isProductModalOpen, isCheckoutModalOpen, isMessageModalOpen]); // Dependencias para useEffect
 
             // Función para hacer scroll suave a la categoría
+            // (Se mantiene para la categoría 'Todo' si se decide usar scroll para esa vista)
             const scrollToCategory = (categoryId) => {
                 const element = document.getElementById(`category-${categoryId}`);
                 if (element) {
-                    // Ajusta el offset para que el título no quede debajo de la barra de navegación sticky
-                    const offset = document.querySelector('.category-nav')?.offsetHeight || 0;
+                    const categoryNav = document.querySelector('.category-nav');
+                    const offset = categoryNav ? categoryNav.offsetHeight : 0;
+                    
                     const elementPosition = element.getBoundingClientRect().top + window.scrollY;
                     window.scrollTo({
-                        top: elementPosition - offset - 20, // 20px de padding adicional
+                        top: elementPosition - offset - 20, 
                         behavior: 'smooth'
                     });
                 }
@@ -828,103 +1038,134 @@
 
             return (
                 <div className="min-h-screen flex flex-col bg-gray-100 font-inter text-gray-800">
-                    {/* Header (Solo para móvil - flotante en la parte superior) */}
-                    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-xl md:hidden">
-                        <div className="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/ef4444/FFFFFF?text=Logo" alt="Logo Jazz Burgers" className="rounded-full" />
-                            <h1 className="text-2xl font-bold text-gray-900">Jazz Burgers</h1>
-                        </div>
-                    </header>
+                    {/* Renderiza la Landing Page o el menú principal */}
+                    {currentPage === 'landing' ? (
+                        <LandingPage onSelectCategory={(catId) => { setCurrentPage('main'); setSelectedCategory(catId); }} />
+                    ) : (
+                        <>
+                            {/* Header (Solo para móvil - flotante en la parte superior) */}
+                            <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-xl md:hidden">
+                                <div className="flex items-center space-x-2">
+                                    <img src="https://placehold.co/40x40/ef4444/FFFFFF?text=Logo" alt="Logo Jazz Burgers" className="rounded-full" />
+                                    <h1 className="text-2xl font-bold text-gray-900">Jazz Burgers</h1>
+                                </div>
+                                {/* Botón para volver a la Landing Page */}
+                                <button
+                                    className="p-2 text-gray-500 hover:text-gray-800 rounded-full hover:bg-gray-100 transition-colors"
+                                    onClick={() => setCurrentPage('landing')}
+                                >
+                                    <ArrowLeftIcon className="w-6 h-6" />
+                                </button>
+                            </header>
 
-                    {/* Hero Section (visible solo en desktop y tablet) */}
-                    <section className="hidden md:block w-full bg-cover bg-center h-64 md:h-80 lg:h-96 relative rounded-b-xl overflow-hidden" style={{backgroundImage: 'url(https://placehold.co/1200x500/ef4444/FFFFFF?text=Bienvenido+a+Jazz+Burgers)'}}>
-                        <div className="absolute inset-0 bg-black opacity-40"></div>
-                        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-4">
-                            <h2 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Jazz Burgers</h2>
-                            <p className="text-xl md:text-2xl font-medium drop-shadow-lg">Las mejores hamburguesas de la ciudad.</p>
-                        </div>
-                    </section>
+                            {/* Hero Section (visible solo en desktop y tablet) */}
+                            <section className="hidden md:block w-full bg-cover bg-center h-64 md:h-80 lg:h-96 relative rounded-b-xl overflow-hidden" style={{backgroundImage: 'url(https://placehold.co/1200x500/ef4444/FFFFFF?text=Bienvenido+a+Jazz+Burgers)'}}>
+                                <div className="absolute inset-0 bg-black opacity-40"></div>
+                                <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-4">
+                                    <h2 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Jazz Burgers</h2>
+                                    <p className="text-xl md:text-2xl font-medium drop-shadow-lg">Las mejores hamburguesas de la ciudad.</p>
+                                </div>
+                                {/* Botón para volver a la Landing Page en Desktop/Tablet */}
+                                <button
+                                    className="absolute top-4 left-4 p-3 bg-white text-gray-700 rounded-full shadow-md hover:bg-gray-100 transition-colors hidden md:flex items-center space-x-2"
+                                    onClick={() => setCurrentPage('landing')}
+                                >
+                                    <ArrowLeftIcon className="w-5 h-5" />
+                                    <span className="font-semibold">Volver al Inicio</span>
+                                </button>
+                            </section>
 
-                    {/* Category Tabs (Fijo en la parte superior, con scroll horizontal en móviles) */}
-                    <nav className="bg-white shadow-md p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-0 md:top-[0px] z-30 border-b border-gray-200 rounded-b-xl category-nav">
-                        {categories.map(category => (
-                            <button
-                                key={category.id}
-                                onClick={() => {
-                                    setSelectedCategory(category.id);
-                                    scrollToCategory(category.id);
-                                }}
-                                className={`flex items-center px-5 py-2 rounded-full text-base font-medium transition-all duration-200 whitespace-nowrap shadow-sm
-                                    ${selectedCategory === category.id
-                                        ? 'bg-red-600 text-white shadow-lg transform scale-105'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                    }`}
-                            >
-                                {category.icon}
-                                <span className="ml-2">{category.name}</span>
-                            </button>
-                        ))}
-                    </nav>
+                            {/* Category Tabs (Fijo en la parte superior, con scroll horizontal en móviles) */}
+                            <nav className="bg-white shadow-md p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-0 md:top-[0px] z-30 border-b border-gray-200 rounded-b-xl category-nav">
+                                {categories.map(category => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => {
+                                            setSelectedCategory(category.id);
+                                        }}
+                                        className={`flex items-center px-5 py-2 rounded-full text-base font-medium transition-all duration-200 whitespace-nowrap shadow-sm
+                                            ${selectedCategory === category.id
+                                                ? 'bg-red-600 text-white shadow-lg transform scale-105'
+                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            }`}
+                                    >
+                                        {category.icon}
+                                        <span className="ml-2">{category.name}</span>
+                                    </button>
+                                ))}
+                            </nav>
 
-                    {/* Main Content Area */}
-                    <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                        {categories.map(category => {
-                            const productsInCategory = products.filter(p => selectedCategory === 'all' || p.category === category.id);
-                            // Solo renderiza la sección si hay productos en ella para la categoría seleccionada (o si es 'Todo')
-                            if (productsInCategory.length === 0 && selectedCategory !== 'all') return null;
+                            {/* Main Content Area */}
+                            <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+                                {/* Siempre mostramos UNA sección, ya sea "Todo" o una categoría específica */}
+                                {(() => {
+                                    const categoryToDisplay = categories.find(cat => cat.id === selectedCategory);
+                                    const productsToDisplay = selectedCategory === 'all'
+                                        ? products
+                                        : products.filter(p => p.category === selectedCategory);
 
-                            return (
-                                <section key={category.id} id={`category-${category.id}`} className="mb-8">
-                                    <h2 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-500 pb-2">
-                                        {category.name}
-                                    </h2>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                        {productsInCategory.map(product => (
-                                            <div
-                                                key={product.id}
-                                                className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
-                                                onClick={() => openProductModal(product)}
-                                            >
-                                                <img
-                                                    src={product.image}
-                                                    alt={product.name}
-                                                    className="w-full h-48 object-cover rounded-t-2xl"
-                                                />
-                                                <div className="p-4 flex-grow flex flex-col justify-between">
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-                                                    <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
-                                                    <div className="flex justify-between items-center mt-auto">
-                                                        <span className="text-2xl font-extrabold text-red-600">
-                                                            ${product.price.toLocaleString('es-AR')}
-                                                        </span>
-                                                        <button
-                                                            className="bg-red-500 text-white p-3 rounded-full shadow-md hover:bg-red-600 transition-colors"
-                                                            onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
+                                    if (!categoryToDisplay) return null; // Fallback si por alguna razón la categoría no se encuentra
+
+                                    return (
+                                        <section key={categoryToDisplay.id} id={`category-${categoryToDisplay.id}`} className="mb-8">
+                                            <h2 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-500 pb-2">
+                                                {categoryToDisplay.name}
+                                            </h2>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                                {productsToDisplay.length > 0 ? (
+                                                    productsToDisplay.map(product => (
+                                                        <div
+                                                            key={product.id}
+                                                            className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
+                                                            onClick={() => openProductModal(product)}
                                                         >
-                                                            <PlusIcon className="w-6 h-6" />
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                            <img
+                                                                src={product.image}
+                                                                alt={product.name}
+                                                                className="w-full h-48 object-cover rounded-t-2xl"
+                                                            />
+                                                            <div className="p-4 flex-grow flex flex-col justify-between">
+                                                                <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
+                                                                <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
+                                                                <div className="flex justify-between items-center mt-auto">
+                                                                    <span className="text-2xl font-extrabold text-red-600">
+                                                                        ${product.price.toLocaleString('es-AR')}
+                                                                    </span>
+                                                                    <button
+                                                                        className="bg-red-500 text-white p-3 rounded-full shadow-md hover:bg-red-600 transition-colors"
+                                                                        onClick={(e) => { e.stopPropagation(); openProductModal(product); }}
+                                                                    >
+                                                                        <PlusIcon className="w-6 h-6" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-gray-500 col-span-full text-center py-8">
+                                                        No hay productos disponibles en esta categoría.
+                                                    </p>
+                                                )}
                                             </div>
-                                        ))}
-                                    </div>
-                                </section>
-                            );
-                        })}
-                    </main>
+                                        </section>
+                                    );
+                                })()}
+                            </main>
 
-                    {/* Floating Cart Button */}
-                    <button
-                        className="fixed bottom-6 right-6 p-4 bg-red-600 text-white rounded-full shadow-2xl hover:bg-red-700 transition-all duration-300 transform scale-100 hover:scale-110 z-50"
-                        onClick={() => setIsCartOpen(!isCartOpen)}
-                    >
-                        <ShoppingCartIcon className="w-8 h-8" />
-                        {cart.length > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce border-2 border-white">
-                                {cart.length}
-                            </span>
-                        )}
-                    </button>
+                            {/* Floating Cart Button */}
+                            <button
+                                className="fixed bottom-6 right-6 p-4 bg-red-600 text-white rounded-full shadow-2xl hover:bg-red-700 transition-all duration-300 transform scale-100 hover:scale-110 z-50"
+                                onClick={() => setIsCartOpen(!isCartOpen)}
+                            >
+                                <ShoppingCartIcon className="w-8 h-8" />
+                                {cart.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce border-2 border-white">
+                                        {cart.length}
+                                    </span>
+                                )}
+                            </button>
+                        </>
+                    )}
 
                     {/* Cart Sidebar */}
                     <div
@@ -948,7 +1189,43 @@
                                 <p className="text-lg">Tu carrito está vacío.</p>
                             </div>
                         ) : (
-                            <div className="flex-grow overflow-y-auto space-y-4 pr-2 -mr-2"> {/* Se agregó padding para la barra de desplazamiento */}
+                            <div className="flex-grow overflow-y-auto space-y-4 pr-2 -mr-2">
+                                {/* Sección de resumen del pedido por IA */}
+                                <div className="mt-4 mb-4 border-b pb-4 border-gray-200">
+                                    <button
+                                        onClick={generateOrderSummary}
+                                        className="w-full bg-indigo-600 text-white py-2 rounded-full text-md font-semibold shadow-md hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={isOrderSummaryLoading || cart.length === 0 || GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY}
+                                    >
+                                        {isOrderSummaryLoading ? (
+                                            <>
+                                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                <span>Generando resumen...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <SparklesIcon className="w-5 h-5" />
+                                                <span>✨ Resumir mi Pedido ✨</span>
+                                            </>
+                                        )}
+                                    </button>
+                                    {(GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY) && (
+                                        <p className="text-sm text-center text-yellow-600 mt-2">
+                                            *Configura tu `GEMINI_API_KEY` para el resumen.
+                                        </p>
+                                    )}
+                                    {orderSummaryDescription && (
+                                        <div className="bg-blue-50 p-3 rounded-lg mt-3 text-sm text-blue-800">
+                                            <p className="font-semibold mb-1">¡Aquí está tu pedido resumido!</p>
+                                            <p>{orderSummaryDescription}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Fin de la sección de resumen del pedido */}
+
                                 {cart.map(item => (
                                     <div key={item.uniqueId} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg shadow-sm">
                                         <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md flex-shrink-0" />
@@ -1014,8 +1291,8 @@
 
                     {/* Product Customization Modal */}
                     {isProductModalOpen && selectedProduct && (
-                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end md:items-center justify-center p-0 md:p-4 z-[1000]"> {/* Ajustado para aparecer desde abajo en móvil */}
-                            <div ref={productModalRef} className="modal-content bg-white w-full h-[90vh] md:h-auto overflow-y-auto relative p-6 flex flex-col"> {/* Ajustado altura y flex-col */}
+                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end md:items-center justify-center p-0 md:p-4 z-[1000]">
+                            <div ref={productModalRef} className="modal-content bg-white w-full h-[90vh] md:max-h-[calc(100vh-2rem)] relative p-6 flex flex-col overflow-hidden">
                                 <button
                                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold p-1 rounded-full bg-white hover:bg-gray-100 transition-colors z-20"
                                     onClick={closeProductModal}
@@ -1027,19 +1304,19 @@
                                     alt={selectedProduct.name}
                                     className="w-full h-64 md:h-72 object-cover rounded-xl mb-4 md:mb-6 flex-shrink-0"
                                 />
-                                <div className="flex-grow flex flex-col"> {/* Contenido interno del modal */}
+                                <div className="flex-grow flex flex-col overflow-hidden">
                                     <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">{selectedProduct.name}</h3>
-                                    <p className="text-gray-600 mb-4 text-base md:text-lg">{selectedProduct.description}</p>
+                                    <p className="text-gray-600 mb-4 text-base md:text-lg flex-shrink-0">{selectedProduct.description}</p>
 
                                     {selectedProduct.options && (
-                                        <div className="space-y-6 mb-6 flex-grow overflow-y-auto pr-2 -mr-2"> {/* Scroll para opciones */}
+                                        <div className="space-y-6 mb-6 flex-grow overflow-y-auto pr-2 -mr-2">
                                             {Object.keys(selectedProduct.options).map(optionKey => {
                                                 const optionConfig = selectedProduct.options[optionKey];
                                                 return (
                                                     <div key={optionKey} className="border-t pt-4 border-gray-200">
                                                         <h4 className="text-lg font-semibold text-gray-800 mb-3">{optionConfig.label}</h4>
                                                         {optionConfig.type === 'radio' && (
-                                                            <div className="space-y-3"> {/* Mayor espacio entre opciones */}
+                                                            <div className="space-y-3">
                                                                 {optionConfig.choices.map(choice => (
                                                                     <label key={choice.value} className="flex items-center p-4 option-label cursor-pointer">
                                                                         <input
@@ -1061,7 +1338,7 @@
                                                             </div>
                                                         )}
                                                         {optionConfig.type === 'checkbox' && (
-                                                            <div className="space-y-3"> {/* Mayor espacio entre opciones */}
+                                                            <div className="space-y-3">
                                                                 {optionConfig.choices.map(choice => (
                                                                     <label key={choice.value} className="flex items-center p-4 option-label cursor-pointer">
                                                                         <input
@@ -1087,11 +1364,11 @@
                                     )}
 
                                     {/* Gemini LLM Recommendation Section */}
-                                    <div className="mt-6 mb-6 border-t pt-4 border-gray-200 flex-shrink-0"> {/* flex-shrink-0 para que no se contraiga */}
+                                    <div className="mt-6 mb-6 border-t pt-4 border-gray-200 flex-shrink-0">
                                         <button
                                             onClick={getChefRecommendation}
                                             className="w-full bg-purple-600 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={isLlmLoading || GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY} // Deshabilita si la clave no está configurada
+                                            disabled={isLlmLoading || GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY}
                                         >
                                             {isLlmLoading ? (
                                                 <>
@@ -1108,7 +1385,7 @@
                                                 </>
                                             )}
                                         </button>
-                                        {GEMINI_API_KEY === "TU_API_KEY_AQUI" && (
+                                        {(GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY) && (
                                             <p className="text-sm text-center text-yellow-600 mt-2">
                                                 *Para usar la recomendación del chef, configura tu `GEMINI_API_KEY` en el código.
                                             </p>
@@ -1126,7 +1403,7 @@
                                         )}
                                     </div>
 
-                                    <div className="flex items-center justify-between border-t border-gray-200 pt-6 flex-shrink-0"> {/* flex-shrink-0 */}
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-6 flex-shrink-0">
                                         <div className="flex items-center space-x-3">
                                             <button
                                                 className="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed quantity-btn"
