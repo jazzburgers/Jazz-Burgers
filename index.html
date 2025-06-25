@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jazz Burgers | Pedidos Online</title> <!-- Título actualizado -->
-    <!-- Tailwind CSS CDN -->
+    <title>Jazz Burgers | Pedidos Online</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Babel para transpilar JSX en el navegador (solo para desarrollo/ejemplo simple) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -20,7 +18,7 @@
         }
         /* Estilos generales para botones y elementos redondeados */
         .btn-primary {
-            background-color: #ef4444; /* Rojo vibrante, similar a la referencia */
+            background-color: #ef4444; /* Rojo vibrante */
             color: white;
             padding: 12px 24px;
             border-radius: 9999px; /* Totalmente redondeado (pill shape) */
@@ -76,7 +74,30 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
             animation: slideUp 0.3s ease-out; /* Animación de entrada */
         }
+        /* Para hacer que el modal aparezca desde abajo en móviles */
+        @media (max-width: 767px) {
+            .modal-content {
+                animation: slideUpMobile 0.3s ease-out;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                height: 90vh; /* Ocupa la mayor parte de la pantalla verticalmente */
+            }
+            .modal.hidden .modal-content {
+                animation: slideDownMobile 0.3s ease-in forwards;
+            }
+        }
+
         @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideUpMobile {
             from {
                 transform: translateY(100%);
                 opacity: 0;
@@ -90,6 +111,16 @@
             animation: slideDown 0.3s ease-in forwards; /* Animación de salida */
         }
         @keyframes slideDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+         @keyframes slideDownMobile {
             from {
                 transform: translateY(0);
                 opacity: 1;
@@ -142,16 +173,16 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
-    <!-- Contenedor donde se montará la aplicación React -->
     <div id="root" class="w-full"></div>
 
     <script type="text/babel">
-        console.log("Aplicación de Pedidos: Script React cargando..."); // Added console log
+        console.log("Aplicación de Pedidos: Script React cargando...");
 
         const { useState, useEffect, useRef } = React;
         const ReactDOM = window.ReactDOM;
 
         // Inline SVG Icons (reemplazando Lucide React)
+        // Se utilizan SVG en línea para reducir dependencias externas y simplificar el despliegue.
         const ShoppingCartIcon = ({ className = 'w-6 h-6' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 12.87a2 2 0 0 0 2 1.13h9.43a2 2 0 0 0 2-1.13L23 6H6" /></svg>
         );
@@ -173,16 +204,16 @@
         const BurgerIcon = ({ className = 'w-5 h-5' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 17a8 8 0 0 1-5-1.8L2 22l4-2h8a8 8 0 0 0 0-16H4.2l-2.4 2.8A12 12 0 0 0 11 17z" /><path d="M22 17h-1a8 8 0 0 0-7-7V2.5L22 10z" /></svg>
         );
-        const FriesIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para papas fritas/acompañamientos */
+        const FriesIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para papas fritas/acompañamientos */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 13V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M10 13V7h4v6" /><path d="M12 19v3" /><path d="M8 19v3" /><path d="M16 19v3" /></svg>
         );
-        const DrinkIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para bebidas */
+        const DrinkIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para bebidas */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6" /><path d="M10 12h4v-2.5a2.5 2.5 0 0 0-2.5-2.5h-2.5V2h4" /><path d="M12 18v2" /></svg>
         );
-        const DessertIcon = ({ className = 'w-5 h-5' }) => ( /* Nuevo icono para postres */
+        const DessertIcon = ({ className = 'w-5 h-5' }) => ( /* Icono para postres */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" /><path d="M8.5 10a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 10z" /><path d="M14 7a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 14 7z" /><path d="M15.5 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14z" /><path d="M10 15.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 10 15.5z" /></svg>
         );
-        const SparklesIcon = ({ className = 'w-6 h-6' }) => (
+        const SparklesIcon = ({ className = 'w-6 h-6' }) => ( /* Icono para la recomendación de IA */
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <path d="M9.9 2.5l-.23.63a1.8 1.8 0 0 1-1.63 1.25L5.26 4.67l.63-.23a1.8 1.8 0 0 1 1.25-1.63l.7-.26a1.8 1.8 0 0 1 1.63 1.25z" />
                 <path d="M12 11l.23-.63a1.8 1.8 0 0 0 1.63-1.25L17.74 9.33l-.63.23a1.8 1.8 0 0 0-1.25 1.63l-.7.26a1.8 1.8 0 0 0-1.63-1.25z" />
@@ -191,18 +222,22 @@
             </svg>
         );
 
-        // Main App Component
+        // Componente principal de la aplicación
         const App = () => {
-            // Configuration: Your WhatsApp Number
+            // Configuración: Tu número de WhatsApp
             const WHATSAPP_NUMBER = "5491122663776"; // !!! CAMBIA ESTO por tu número de WhatsApp con código de país (sin + ni espacios).
                                                     // Para el número 01122663776 (Argentina), el formato internacional es 5491122663776.
-
-            // Product Data (Highly customizable)
-            // Structure includes categories and customizable options for products
+            
+            // !!! IMPORTANTE: Reemplaza "TU_API_KEY_AQUI" con tu propia API Key de Google Gemini.
+            // Puedes obtenerla en Google AI Studio: https://makersuite.google.com/
+            const GEMINI_API_KEY = "TU_API_KEY_AQUI"; 
+            
+            // Datos de Productos (Altamente personalizable)
+            // La estructura incluye categorías y opciones personalizables para los productos.
             const categories = [
                 { id: 'all', name: 'Todo', icon: <HomeIcon className="w-5 h-5" /> },
                 { id: 'hamburguesas', name: 'Hamburguesas', icon: <BurgerIcon className="w-5 h-5" /> },
-                { id: 'acompanamientos', name: 'Acompañamientos', icon: <FriesIcon className="w-5 h-5" /> }, // Renamed from papas-fritas
+                { id: 'acompanamientos', name: 'Acompañamientos', icon: <FriesIcon className="w-5 h-5" /> },
                 { id: 'bebidas', name: 'Bebidas', icon: <DrinkIcon className="w-5 h-5" /> },
                 { id: 'postres', name: 'Postres', icon: <DessertIcon className="w-5 h-5" /> },
             ];
@@ -380,37 +415,36 @@
                 }
             ];
 
-            // State Variables
-            const [selectedCategory, setSelectedCategory] = useState('all'); // Current selected product category
-            const [cart, setCart] = useState([]); // Items in the shopping cart
-            const [isCartOpen, setIsCartOpen] = useState(false); // State for cart sidebar visibility
-            const [isProductModalOpen, setIsProductModalOpen] = useState(false); // State for product customization modal
-            const [selectedProduct, setSelectedProduct] = useState(null); // Product currently being customized
-            const [customizationOptions, setCustomizationOptions] = useState({}); // Options chosen in product modal
-            const [itemQuantity, setItemQuantity] = useState(1); // Quantity for current product in modal
-            const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false); // State for checkout modal
-            const [customerInfo, setCustomerInfo] = useState({ name: '', address: '', notes: '' }); // Customer details for checkout
-            const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // State for general message modal
-            const [messageModalContent, setMessageModalContent] = useState({ title: '', text: '' }); // Content for message modal
-            const [llmRecommendation, setLlmRecommendation] = useState(null); // State for LLM recommendation
-            const [isLlmLoading, setIsLlmLoading] = useState(false); // State for LLM loading indicator
+            // Variables de estado
+            const [selectedCategory, setSelectedCategory] = useState('all'); // Categoría de producto seleccionada actualmente
+            const [cart, setCart] = useState([]); // Artículos en el carrito de compras
+            const [isCartOpen, setIsCartOpen] = useState(false); // Estado de visibilidad de la barra lateral del carrito
+            const [isProductModalOpen, setIsProductModalOpen] = useState(false); // Estado del modal de personalización de producto
+            const [selectedProduct, setSelectedProduct] = useState(null); // Producto que se está personalizando
+            const [customizationOptions, setCustomizationOptions] = useState({}); // Opciones elegidas en el modal de producto
+            const [itemQuantity, setItemQuantity] = useState(1); // Cantidad para el producto actual en el modal
+            const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false); // Estado del modal de pago
+            const [customerInfo, setCustomerInfo] = useState({ name: '', address: '', notes: '' }); // Detalles del cliente para el pago
+            const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // Estado del modal de mensaje general
+            const [messageModalContent, setMessageModalContent] = useState({ title: '', text: '' }); // Contenido para el modal de mensaje
+            const [llmRecommendation, setLlmRecommendation] = useState(null); // Estado para la recomendación del LLM (Gemini)
+            const [isLlmLoading, setIsLlmLoading] = useState(false); // Estado para el indicador de carga del LLM
 
-
-            // Refs for modals to handle clicks outside
+            // Refs para modales y barra lateral para manejar clics fuera
             const cartRef = useRef(null);
             const productModalRef = useRef(null);
             const checkoutModalRef = useRef(null);
             const messageModalRef = useRef(null);
 
-            // Filtered products based on selected category
+            // Productos filtrados según la categoría seleccionada
             const filteredProducts = selectedCategory === 'all'
                 ? products
                 : products.filter(p => p.category === selectedCategory);
 
-            // Calculate total price of items in the cart
+            // Calcula el precio total de los artículos en el carrito
             const cartTotal = cart.reduce((sum, item) => sum + (item.price + item.optionPrice) * item.quantity, 0);
 
-            // --- Utility Functions ---
+            // --- Funciones de Utilidad ---
 
             /**
              * Muestra un modal de mensaje/alerta general.
@@ -430,7 +464,7 @@
                 setMessageModalContent({ title: '', text: '' });
             };
 
-            // --- Product Modal Functions ---
+            // --- Funciones del Modal de Producto ---
 
             /**
              * Abre el modal de personalización de productos para un producto dado.
@@ -452,7 +486,7 @@
                     });
                 }
                 setCustomizationOptions(initialOptions);
-                setLlmRecommendation(null); // Reset LLM recommendation when opening new product
+                setLlmRecommendation(null); // Reinicia la recomendación de IA al abrir un nuevo producto
                 setIsProductModalOpen(true);
             };
 
@@ -464,8 +498,8 @@
                 setSelectedProduct(null);
                 setCustomizationOptions({});
                 setItemQuantity(1);
-                setLlmRecommendation(null); // Clear recommendation on close
-                setIsLlmLoading(false); // Stop loading on close
+                setLlmRecommendation(null); // Limpia la recomendación al cerrar
+                setIsLlmLoading(false); // Detiene la carga al cerrar
             };
 
             /**
@@ -488,7 +522,7 @@
                     }
                     return prevOptions;
                 });
-                setLlmRecommendation(null); // Clear recommendation if options change
+                setLlmRecommendation(null); // Borra la recomendación si cambian las opciones
             };
 
             /**
@@ -516,16 +550,16 @@
                 return extraPrice;
             };
 
-            // --- Gemini API Integration for Chef's Recommendation ---
+            // --- Integración con Gemini API para Recomendación del Chef ---
             const getChefRecommendation = async () => {
                 if (!selectedProduct) return;
 
                 setIsLlmLoading(true);
-                setLlmRecommendation(null); // Clear previous recommendation
+                setLlmRecommendation(null); // Borra cualquier recomendación previa
 
                 let promptText = `Dado el plato principal "${selectedProduct.name}" con la descripción "${selectedProduct.description}"`;
 
-                // Add chosen options to the prompt
+                // Añade las opciones elegidas al prompt
                 const chosenOptionDetails = Object.keys(customizationOptions)
                     .map(optionKey => {
                         const optionConfig = selectedProduct.options?.[optionKey];
@@ -568,8 +602,7 @@
                     }
                 };
 
-                const apiKey = ""; // Leave as-is for Canvas environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
                 try {
                     const response = await fetch(apiUrl, {
@@ -577,6 +610,13 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Error en la respuesta de la API de Gemini:', response.status, errorData);
+                        showMessageModal('Error en la IA', `No se pudo generar una recomendación. Código de error: ${response.status}.`);
+                        return;
+                    }
 
                     const result = await response.json();
 
@@ -587,18 +627,18 @@
                         const parsedRecommendation = JSON.parse(jsonString);
                         setLlmRecommendation(parsedRecommendation);
                     } else {
-                        console.error('Unexpected LLM response structure:', result);
-                        showMessageModal('Error en la IA', 'No se pudo generar una recomendación. Inténtalo de nuevo.');
+                        console.error('Estructura de respuesta inesperada del LLM:', result);
+                        showMessageModal('Error en la IA', 'No se pudo generar una recomendación. Formato de respuesta inesperado.');
                     }
                 } catch (error) {
-                    console.error('Error calling Gemini API:', error);
-                    showMessageModal('Error de Conexión', 'No se pudo conectar con el servicio de recomendaciones. Verifica tu conexión.');
+                    console.error('Error al llamar a la API de Gemini:', error);
+                    showMessageModal('Error de Conexión', 'No se pudo conectar con el servicio de recomendaciones. Verifica tu conexión o clave API.');
                 } finally {
                     setIsLlmLoading(false);
                 }
             };
 
-            // --- Cart Functions ---
+            // --- Funciones del Carrito ---
 
             /**
              * Agrega el producto seleccionado con sus personalizaciones actuales y cantidad al carrito.
@@ -660,7 +700,7 @@
                 showMessageModal('Producto Eliminado', 'Producto eliminado del carrito.');
             };
 
-            // --- Checkout Functions ---
+            // --- Funciones de Pago ---
 
             /**
              * Abre el modal de pago si el carrito no está vacío.
@@ -703,9 +743,9 @@
                                 const selectedValue = item.chosenOptions[optionKey];
                                 if (optionConfig.type === 'radio' && selectedValue) {
                                     const choice = optionConfig.choices.find(c => c.value === selectedValue);
-                                    if (choice) message += `   - ${optionConfig.label}: ${choice.label}\n`;
+                                    if (choice) message += `    - ${optionConfig.label}: ${choice.label}\n`;
                                 } else if (optionConfig.type === 'checkbox' && Array.isArray(selectedValue) && selectedValue.length > 0) {
-                                    message += `   - ${optionConfig.label}: ${selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ')}\n`;
+                                    message += `    - ${optionConfig.label}: ${selectedValue.map(val => optionConfig.choices.find(c => c.value === val)?.label).join(', ')}\n`;
                                 }
                             }
                         });
@@ -776,10 +816,15 @@
             const scrollToCategory = (categoryId) => {
                 const element = document.getElementById(`category-${categoryId}`);
                 if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Ajusta el offset para que el título no quede debajo de la barra de navegación sticky
+                    const offset = document.querySelector('.category-nav')?.offsetHeight || 0;
+                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({
+                        top: elementPosition - offset - 20, // 20px de padding adicional
+                        behavior: 'smooth'
+                    });
                 }
             };
-
 
             return (
                 <div className="min-h-screen flex flex-col bg-gray-100 font-inter text-gray-800">
@@ -789,10 +834,9 @@
                             <img src="https://placehold.co/40x40/ef4444/FFFFFF?text=Logo" alt="Logo Jazz Burgers" className="rounded-full" />
                             <h1 className="text-2xl font-bold text-gray-900">Jazz Burgers</h1>
                         </div>
-                         {/* Botón de carrito movido al flotante */}
                     </header>
 
-                    {/* Hero Section (visible solo en desktop y tablet, o en mobile si está al inicio de la página) */}
+                    {/* Hero Section (visible solo en desktop y tablet) */}
                     <section className="hidden md:block w-full bg-cover bg-center h-64 md:h-80 lg:h-96 relative rounded-b-xl overflow-hidden" style={{backgroundImage: 'url(https://placehold.co/1200x500/ef4444/FFFFFF?text=Bienvenido+a+Jazz+Burgers)'}}>
                         <div className="absolute inset-0 bg-black opacity-40"></div>
                         <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center p-4">
@@ -800,7 +844,6 @@
                             <p className="text-xl md:text-2xl font-medium drop-shadow-lg">Las mejores hamburguesas de la ciudad.</p>
                         </div>
                     </section>
-
 
                     {/* Category Tabs (Fijo en la parte superior, con scroll horizontal en móviles) */}
                     <nav className="bg-white shadow-md p-3 overflow-x-auto flex items-center justify-start md:justify-center space-x-4 sticky top-0 md:top-[0px] z-30 border-b border-gray-200 rounded-b-xl category-nav">
@@ -811,7 +854,7 @@
                                     setSelectedCategory(category.id);
                                     scrollToCategory(category.id);
                                 }}
-                                className={`flex items-center px-5 py-2 rounded-full text-base font-medium transition-colors whitespace-nowrap shadow-sm
+                                className={`flex items-center px-5 py-2 rounded-full text-base font-medium transition-all duration-200 whitespace-nowrap shadow-sm
                                     ${selectedCategory === category.id
                                         ? 'bg-red-600 text-white shadow-lg transform scale-105'
                                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -825,43 +868,49 @@
 
                     {/* Main Content Area */}
                     <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                        {categories.map(category => (
-                            <section key={category.id} id={`category-${category.id}`} className="mb-8">
-                                <h2 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-500 pb-2">
-                                    {category.name}
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {products.filter(p => selectedCategory === 'all' || p.category === category.id).map(product => (
-                                        <div
-                                            key={product.id}
-                                            className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
-                                            onClick={() => openProductModal(product)}
-                                        >
-                                            <img
-                                                src={product.image}
-                                                alt={product.name}
-                                                className="w-full h-48 object-cover rounded-t-2xl"
-                                            />
-                                            <div className="p-4 flex-grow flex flex-col justify-between">
-                                                <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-                                                <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
-                                                <div className="flex justify-between items-center mt-auto">
-                                                    <span className="text-2xl font-extrabold text-red-600">
-                                                        ${product.price.toLocaleString('es-AR')}
-                                                    </span>
-                                                    <button
-                                                        className="bg-red-500 text-white p-3 rounded-full shadow-md hover:bg-red-600 transition-colors"
-                                                        onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
-                                                    >
-                                                        <PlusIcon className="w-6 h-6" />
-                                                    </button>
+                        {categories.map(category => {
+                            const productsInCategory = products.filter(p => selectedCategory === 'all' || p.category === category.id);
+                            // Solo renderiza la sección si hay productos en ella para la categoría seleccionada (o si es 'Todo')
+                            if (productsInCategory.length === 0 && selectedCategory !== 'all') return null;
+
+                            return (
+                                <section key={category.id} id={`category-${category.id}`} className="mb-8">
+                                    <h2 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-500 pb-2">
+                                        {category.name}
+                                    </h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                        {productsInCategory.map(product => (
+                                            <div
+                                                key={product.id}
+                                                className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
+                                                onClick={() => openProductModal(product)}
+                                            >
+                                                <img
+                                                    src={product.image}
+                                                    alt={product.name}
+                                                    className="w-full h-48 object-cover rounded-t-2xl"
+                                                />
+                                                <div className="p-4 flex-grow flex flex-col justify-between">
+                                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
+                                                    <p className="text-sm text-gray-600 mb-3 flex-grow">{product.description}</p>
+                                                    <div className="flex justify-between items-center mt-auto">
+                                                        <span className="text-2xl font-extrabold text-red-600">
+                                                            ${product.price.toLocaleString('es-AR')}
+                                                        </span>
+                                                        <button
+                                                            className="bg-red-500 text-white p-3 rounded-full shadow-md hover:bg-red-600 transition-colors"
+                                                            onClick={(e) => { e.stopPropagation(); openProductModal(product); }} // Evitar que el modal se cierre al hacer clic en el botón
+                                                        >
+                                                            <PlusIcon className="w-6 h-6" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        ))}
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        })}
                     </main>
 
                     {/* Floating Cart Button */}
@@ -876,7 +925,6 @@
                             </span>
                         )}
                     </button>
-
 
                     {/* Cart Sidebar */}
                     <div
@@ -1043,7 +1091,7 @@
                                         <button
                                             onClick={getChefRecommendation}
                                             className="w-full bg-purple-600 text-white py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={isLlmLoading}
+                                            disabled={isLlmLoading || GEMINI_API_KEY === "TU_API_KEY_AQUI" || !GEMINI_API_KEY} // Deshabilita si la clave no está configurada
                                         >
                                             {isLlmLoading ? (
                                                 <>
@@ -1060,6 +1108,11 @@
                                                 </>
                                             )}
                                         </button>
+                                        {GEMINI_API_KEY === "TU_API_KEY_AQUI" && (
+                                            <p className="text-sm text-center text-yellow-600 mt-2">
+                                                *Para usar la recomendación del chef, configura tu `GEMINI_API_KEY` en el código.
+                                            </p>
+                                        )}
                                         {llmRecommendation && (
                                             <div className="bg-blue-50 p-4 rounded-lg mt-4 text-center">
                                                 <p className="text-blue-800 font-semibold mb-2">¡El Chef sugiere!</p>
@@ -1193,12 +1246,12 @@
 
         // Renderiza la aplicación React en el elemento con id="root"
         const container = document.getElementById('root');
-        try { // Added try-catch block
+        try {
             const root = ReactDOM.createRoot(container);
             root.render(<App />);
-            console.log("Aplicación de Pedidos: React app renderizada exitosamente."); // Added success log
+            console.log("Aplicación de Pedidos: React app renderizada exitosamente.");
         } catch (error) {
-            console.error("Aplicación de Pedidos: Error al renderizar la aplicación React:", error); // Added error log
+            console.error("Aplicación de Pedidos: Error al renderizar la aplicación React:", error);
         }
     </script>
 </body>
